@@ -11,3 +11,6 @@ body {
     left: 0px;
     top: 0px;
 }
+#hopper canvas {
+    display: block;
+}
