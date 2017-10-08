@@ -32,7 +32,7 @@ class Player {
     // TODO move this out to a chunk renderer
     this.blockRenderer = new ColorBlockRenderer({
       gl: gl,
-      shader: shaders.colorBlock
+      shader: this.shaders.colorBlock
     });
 
     this.update = this.update.bind(this);

@@ -43,11 +43,13 @@ class ColorBlockRenderer extends BlockRenderer {
   enableAttribs () {
     let gl = this.gl;
     gl.enableVertexAttribArray(this.blockCoordAtt);
-    gl.bindBuffer(gl.ARRAY_BUFFER, gl.blockCoordBuffer);
-    gl.vertexAttribPointer(this.blockCoordAtt, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(this.blockColorAtt);
-    gl.bindBuffer(gl.ARRAY_BUFFER, gl.blockColorBuffer);
-    gl.vertexAttribPointer(this.blockColorAtt, 2, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.blockCoordBuffer);
+    gl.vertexAttribPointer(this.blockCoordAtt, 2, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.blockColorBuffer);
+    gl.vertexAttribPointer(this.blockColorAtt, 4, gl.FLOAT, false, 0, 0);
   }
 
   disableAttribs () {
@@ -110,7 +112,8 @@ class ColorBlockRenderer extends BlockRenderer {
     gl.useProgram(this.shader);
     this.enableAttribs();
     this.uniformData();
-    gl.drawArrays(gl.TRIANGLES, 0, this.blocksWide*this.blocksHigh*vertsPerBlock);
+    let vertCnt = this.blocksWide*this.blocksHigh*vertsPerBlock;
+    gl.drawArrays(gl.TRIANGLES, 0, vertCnt);
     this.disableAttribs();
     this.currBlockIndex = 0;
   }

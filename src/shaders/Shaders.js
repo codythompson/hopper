@@ -7,7 +7,7 @@ const srcs = {
 
 class Shaders {
   constructor (gl) {
-    this.colorBlock = this.compile(gl, srcs.colorBlock.vs.src, srcs.colorBlock.fs);
+    this.colorBlock = this.compile(gl, srcs.colorBlock.vs, srcs.colorBlock.fs);
   }
 
   /**
@@ -20,14 +20,16 @@ class Shaders {
    */
   compile (gl, vertSrc, fragSrc) {
     let vs = gl.createShader(gl.VERTEX_SHADER);
-    gl.compileShader(vs, vertSrc);
+    gl.shaderSource(vs, vertSrc);
+    gl.compileShader(vs);
     if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS)) {
       let compInfo = gl.getShaderInfoLog(vs);
       throw `[hopper][shaders][compile_program] vert shader issue:\n${compInfo}`;
     }
 
     let fs = gl.createShader(gl.FRAGMENT_SHADER);
-    gl.compileShader(fs, fragSrc);
+    gl.shaderSource(fs, fragSrc);
+    gl.compileShader(fs);
     if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS)) {
       throw '[hopper][shaders][compile_program] vert shader issue:\n' + gl.getShaderInfoLog(fs);
     }
@@ -40,6 +42,9 @@ class Shaders {
     if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
       throw '[hopper][shaders][compile_program] Can\'t link program';
     }
+
+    console.log(gl.getAttribLocation(prog, 'aBlockCoord'));
+    console.log(gl.getAttribLocation(prog, 'aBlockColor'));
 
     return prog;
   }
