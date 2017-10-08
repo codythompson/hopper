@@ -10,9 +10,13 @@ const colorComps = 4;
 class ColorBlockRenderer extends BlockRenderer {
   constructor (args) {
     super(args);
+    args = _.defaults(args, {
+      blocksWide: 32,
+      blocksHigh: 32
+    });
     this.shader = args.shader;
-    this.blocksWide = 1;
-    this.blocksHigh = 1;
+    this.blocksWide = args.blocksWide;
+    this.blocksHigh = args.blocksHigh;
 
     const blockCnt = this.blocksWide * this.blocksHigh;
 

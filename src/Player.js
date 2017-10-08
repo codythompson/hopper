@@ -62,8 +62,24 @@ class Player {
       colorG: 1,
       colorB: 1,
       colorA: 1,
+      i: 16,
+      j: 16
+    });
+    this.blockRenderer.add({
+      colorR: 0,
+      colorG: 1,
+      colorB: 1,
+      colorA: 1,
+      i: 1,
+      j: 1
+    });
+    this.blockRenderer.add({
+      colorR: 0,
+      colorG: 1,
+      colorB: 0.5,
+      colorA: 1,
       i: 0,
-      j: 0
+      j: 1
     });
     //
 

@@ -29,11 +29,7 @@ var hopper = {
 window.addEventListener('load', function () {
   hopper.player = new Player({
     parent: document.getElementById(config.parentElId),
-    autoUpdate: false,
-    autoRender: false
   });
-  hopper.player.update();
-  hopper.player.render();
 });
 
 console.log('%chopper ' + hopper.version, 'background-color: black; color: white;');
