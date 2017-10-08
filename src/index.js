@@ -20,14 +20,18 @@ require('../template/hopper.css');
 require('../template/index.html');
 
 const Player = require('./Player');
+const config = require('../template/hopper.config.json');
 
 var hopper = {
   version: '0.0.0'
 };
 
-hopper.player = new Player({});
+window.addEventListener('load', function () {
+  hopper.player = new Player({
+    parent: document.getElementById(config.parentElId)
+  });
+});
 
 console.log('%chopper ' + hopper.version, 'background-color: black; color: white;');
 
 window.hopper = hopper;
-module.exports = hopper;
