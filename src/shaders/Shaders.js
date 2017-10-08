@@ -43,9 +43,6 @@ class Shaders {
       throw '[hopper][shaders][compile_program] Can\'t link program';
     }
 
-    console.log(gl.getAttribLocation(prog, 'aBlockCoord'));
-    console.log(gl.getAttribLocation(prog, 'aBlockColor'));
-
     return prog;
   }
 }
