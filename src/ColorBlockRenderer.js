@@ -1,4 +1,6 @@
-const mat4 = require('gl-matrix').mat4;
+const glMat = require('gl-matrix');
+const mat4 = glMat.mat4;
+const vec2 = glMat.vec2;
 const BlockRenderer = require('./BlockRenderer');
 
 const vertComps = 2;
@@ -22,6 +24,8 @@ class ColorBlockRenderer extends BlockRenderer {
     this.blockColorBuffer = gl.createBuffer();
     this.blockColorArray = new Float32Array(blockCnt*vertsPerBlock*colorComps);
     this.blockColorAtt = gl.getAttribLocation(this.shader, 'aBlockColor');
+
+    this.centerBlockUni = gl.getUniformLocation(this.shader, 'uCenterBlock');
 
     this.projMatUni = gl.getUniformLocation(this.shader, 'uProjMat');
     this.projMatArray = mat4.create();
@@ -60,6 +64,10 @@ class ColorBlockRenderer extends BlockRenderer {
 
   uniformData () {
     let gl = this.gl;
+    let center = vec2.create();
+    center[0] = this.blocksWide/2;
+    center[1] = this.blocksHigh/2;
+    gl.uniform2fv(this.centerBlockUni, center);
     gl.uniformMatrix4fv(this.projMatUni, false, this.projMatArray);
     gl.uniformMatrix4fv(this.mVMatUni, false, this.mVMatArray);
   }
@@ -112,7 +120,7 @@ class ColorBlockRenderer extends BlockRenderer {
     gl.useProgram(this.shader);
     this.enableAttribs();
     this.uniformData();
-    let vertCnt = this.blocksWide*this.blocksHigh*vertsPerBlock;
+    let vertCnt = this.currBlockIndex*vertsPerBlock;
     gl.drawArrays(gl.TRIANGLES, 0, vertCnt);
     this.disableAttribs();
     this.currBlockIndex = 0;
