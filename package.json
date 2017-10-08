@@ -1,0 +1,17 @@
+{
+  "name": "hopper",
+  "version": "0.0.0",
+  "description": "Nothing! Blank Canvas! Scared, but hopeful!",
+  "main": "webpack.config.js",
+  "scripts": {
+    "build": "webpack",
+    "clean": "rm -r dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Cody Thompson",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "file-loader": "^1.1.5",
+    "webpack": "^3.6.0"
+  }
+}
