@@ -1,6 +1,5 @@
 const path = require('path');
 
-
 module.exports = {
   entry: './src/index.js',
   output: {
@@ -8,18 +7,28 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
   },
   module: {
-      rules: [
+    rules: [
+      {
+        test: /template\/\w*\.(html|css)$/,
+        use: [
           {
-              test: /template\/\w*\.(html|css)$/,
-              use: [
-                  {
-                      loader: 'file-loader',
-                      options: {
-                          name: '[name].[ext]'
-                      }
-                  }
-              ]
+            loader: 'file-loader',
+            options: {
+              name: '[name].[ext]'
+            }
           }
-      ]
+        ]
+      },
+      {
+        test: /\.js$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['env']
+          }
+        }
+      }
+    ]
   }
 };

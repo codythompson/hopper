@@ -19,9 +19,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 require('../template/hopper.css');
 require('../template/index.html');
 
+const Player = require('./Player');
+
 var hopper = {
   version: '0.0.0'
 };
+
+hopper.player = new Player({});
 
 console.log('%chopper ' + hopper.version, 'background-color: black; color: white;');
 
