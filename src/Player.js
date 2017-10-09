@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const Shaders = require('./shaders/Shaders');
+const Viewport = require('./Viewport');
 const ColorBlockRenderer = require('./ColorBlockRenderer');
 
 class Player {
@@ -29,9 +30,13 @@ class Player {
     this.lastUpdate = null;
 
     this.shaders = new Shaders(gl);
+    this.viewport = new Viewport({
+      gl: gl
+    });
     // TODO move this out to a chunk renderer
     this.blockRenderer = new ColorBlockRenderer({
       gl: gl,
+      viewport: this.viewport,
       shader: this.shaders.colorBlock
     });
 
@@ -57,30 +62,50 @@ class Player {
     let dt = now - this.lastUpdate;
 
     // TODO this shouldn't be here
-    this.blockRenderer.add({
-      colorR: 1,
-      colorG: 1,
-      colorB: 1,
-      colorA: 1,
-      i: 16,
-      j: 16
-    });
-    this.blockRenderer.add({
-      colorR: 0,
-      colorG: 1,
-      colorB: 1,
-      colorA: 1,
-      i: 1,
-      j: 1
-    });
-    this.blockRenderer.add({
-      colorR: 0,
-      colorG: 1,
-      colorB: 0.5,
-      colorA: 1,
-      i: 0,
-      j: 1
-    });
+    for (let i = 0; i < 32; i++) {
+      for (let j = 0; j < 32; j++) {
+        this.blockRenderer.add({
+          colorR: i/32,
+          colorG: j/32,
+          colorB: i/32,
+          colorA: j/32,
+          i: i,
+          j: j
+        });
+      }
+    }
+    // this.blockRenderer.add({
+    //   colorR: 1,
+    //   colorG: 1,
+    //   colorB: 0,
+    //   colorA: 1,
+    //   i: 16,
+    //   j: 16
+    // });
+    // this.blockRenderer.add({
+    //   colorR: 0,
+    //   colorG: 1,
+    //   colorB: 1,
+    //   colorA: 1,
+    //   i: 0,
+    //   j: 0
+    // });
+    // this.blockRenderer.add({
+    //   colorR: 0,
+    //   colorG: 1,
+    //   colorB: 1,
+    //   colorA: 1,
+    //   i: 31,
+    //   j: 31
+    // });
+    // this.blockRenderer.add({
+    //   colorR: 0,
+    //   colorG: 1,
+    //   colorB: 0.5,
+    //   colorA: 1,
+    //   i: 15,
+    //   j: 15
+    // });
     //
 
     if (this.autoUpdate) {

@@ -11,14 +11,11 @@ class ColorBlockRenderer extends BlockRenderer {
   constructor (args) {
     super(args);
     args = _.defaults(args, {
-      blocksWide: 32,
-      blocksHigh: 32
     });
     this.shader = args.shader;
-    this.blocksWide = args.blocksWide;
-    this.blocksHigh = args.blocksHigh;
+    this.viewport = args.viewport;
 
-    const blockCnt = this.blocksWide * this.blocksHigh;
+    const blockCnt = this.viewport.blocksWide * this.viewport.blocksHigh;
 
     let gl = this.gl;
     this.blockCoordBuffer = gl.createBuffer();
@@ -32,7 +29,6 @@ class ColorBlockRenderer extends BlockRenderer {
     this.centerBlockUni = gl.getUniformLocation(this.shader, 'uCenterBlock');
 
     this.projMatUni = gl.getUniformLocation(this.shader, 'uProjMat');
-    this.projMatArray = mat4.create();
 
     this.mVMatUni = gl.getUniformLocation(this.shader, 'uMVMat');
     this.mVMatArray = mat4.create();
@@ -68,11 +64,8 @@ class ColorBlockRenderer extends BlockRenderer {
 
   uniformData () {
     let gl = this.gl;
-    let center = vec2.create();
-    center[0] = this.blocksWide/2;
-    center[1] = this.blocksHigh/2;
-    gl.uniform2fv(this.centerBlockUni, center);
-    gl.uniformMatrix4fv(this.projMatUni, false, this.projMatArray);
+    gl.uniform2fv(this.centerBlockUni, this.viewport.center);
+    gl.uniformMatrix4fv(this.projMatUni, false, this.viewport.projMat);
     gl.uniformMatrix4fv(this.mVMatUni, false, this.mVMatArray);
   }
 
