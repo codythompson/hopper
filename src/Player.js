@@ -65,10 +65,10 @@ class Player {
     for (let i = 0; i < 32; i++) {
       for (let j = 0; j < 32; j++) {
         this.blockRenderer.add({
-          colorR: i/32,
-          colorG: j/32,
-          colorB: i/32,
-          colorA: j/32,
+          colorR: (i*j)/(31*31),
+          colorG: (i*j)/(31*31),
+          colorB: (i*j)/(31*31),
+          colorA: 1,
           i: i,
           j: j
         });

@@ -26,7 +26,7 @@ class Viewport {
     let top = this.blocksHigh/2;
     let bottom = -top;
 
-    mat4.ortho(this.projMat, left, right, top, bottom, 0.1, 100);
+    mat4.ortho(this.projMat, left, right, bottom, top, -1, 1);
   }
 
   get center () {

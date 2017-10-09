@@ -30,8 +30,6 @@ window.addEventListener('load', function () {
   hopper.player = new Player({
     parent: document.getElementById(config.parentElId),
   });
-  window.mvMat = hopper.player.blockRenderer.mVMatArray;
-  mat4.translate(mvMat, mvMat, [0, 0, -2]);
 });
 
 console.log('%chopper ' + hopper.version, 'background-color: black; color: white;');
