@@ -13,9 +13,9 @@ class ColorBlockRenderer extends BlockRenderer {
     args = _.defaults(args, {
     });
     this.shader = args.shader;
-    this.viewport = args.viewport;
+    this.camera = args.camera;
 
-    const blockCnt = this.viewport.blocksWide * this.viewport.blocksHigh;
+    const blockCnt = this.camera.blocksWide * this.camera.blocksHigh;
 
     let gl = this.gl;
     this.blockCoordBuffer = gl.createBuffer();
@@ -64,8 +64,8 @@ class ColorBlockRenderer extends BlockRenderer {
 
   uniformData () {
     let gl = this.gl;
-    gl.uniform2fv(this.centerBlockUni, this.viewport.center);
-    gl.uniformMatrix4fv(this.projMatUni, false, this.viewport.projMat);
+    gl.uniform2fv(this.centerBlockUni, this.camera.center);
+    gl.uniformMatrix4fv(this.projMatUni, false, this.camera.projMat);
     gl.uniformMatrix4fv(this.mVMatUni, false, this.mVMatArray);
   }
 

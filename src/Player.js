@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const Shaders = require('./shaders/Shaders');
-const Viewport = require('./Viewport');
+const Camera = require('./Camera');
 const ColorBlockRenderer = require('./ColorBlockRenderer');
 
 class Player {
@@ -30,13 +30,13 @@ class Player {
     this.lastUpdate = null;
 
     this.shaders = new Shaders(gl);
-    this.viewport = new Viewport({
+    this.camera = new Camera({
       gl: gl
     });
     // TODO move this out to a chunk renderer
     this.blockRenderer = new ColorBlockRenderer({
       gl: gl,
-      viewport: this.viewport,
+      camera: this.camera,
       shader: this.shaders.colorBlock
     });
 
