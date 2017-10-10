@@ -31,7 +31,9 @@ class Player {
 
     this.shaders = new Shaders(gl);
     this.camera = new Camera({
-      gl: gl
+      gl: gl,
+      blocksWide: 128,
+      blocksHigh: 64
     });
     // TODO move this out to a chunk renderer
     this.blockRenderer = new ColorBlockRenderer({
@@ -62,12 +64,12 @@ class Player {
     let dt = now - this.lastUpdate;
 
     // TODO this shouldn't be here
-    for (let i = 0; i < 32; i++) {
-      for (let j = 0; j < 32; j++) {
+    for (let i = 0; i < this.camera.blocksWide; i++) {
+      for (let j = 0; j < this.camera.blocksHigh; j++) {
         this.blockRenderer.add({
-          colorR: (i*j)/(31*31),
-          colorG: (i*j)/(31*31),
-          colorB: (i*j)/(31*31),
+          colorR: (i+j)/(this.camera.blocksWide+this.camera.blocksHigh),
+          colorG: (i+j)/(this.camera.blocksWide+this.camera.blocksHigh),
+          colorB: (i+j)/(this.camera.blocksWide+this.camera.blocksHigh),
           colorA: 1,
           i: i,
           j: j
