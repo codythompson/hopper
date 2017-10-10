@@ -21,6 +21,7 @@ require('../template/index.html');
 
 const Player = require('./Player');
 const config = require('../template/hopper.config.json');
+const DbgCamController = require('./debug/DbgCamController');
 
 var hopper = {
   version: '0.0.0'
@@ -28,8 +29,13 @@ var hopper = {
 
 window.addEventListener('load', function () {
   hopper.player = new Player({
-    parent: document.getElementById(config.parentElId),
+    parent: document.getElementById(config.parentElId)
   });
+  // TODo THIS is broken
+  window.ctls = new DbgCamController({
+    camera: hopper.player.camera
+  });
+  hopper.player.cameraController = ctls;
 });
 
 console.log('%chopper ' + hopper.version, 'background-color: black; color: white;');

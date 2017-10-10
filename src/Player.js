@@ -8,7 +8,8 @@ class Player {
     args = _.defaults(args, {
       parent: null,
       autoUpdate: true,
-      autoRender: true
+      autoRender: true,
+      cameraController: null
     });
 
     var canvas = document.createElement('canvas');
@@ -35,6 +36,10 @@ class Player {
       blocksWide: 128,
       blocksHigh: 64
     });
+    if (args.cameraController) {
+      this.cameraController = args.cameraController;
+    }
+
     // TODO move this out to a chunk renderer
     this.blockRenderer = new ColorBlockRenderer({
       gl: gl,
@@ -62,6 +67,10 @@ class Player {
 
     let now = Date.now();
     let dt = now - this.lastUpdate;
+
+    if (this.cameraController) {
+      this.cameraController.update(dt);
+    }
 
     // TODO this shouldn't be here
     for (let i = 0; i < this.camera.blocksWide; i++) {

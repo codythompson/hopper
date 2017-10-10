@@ -223,3 +223,28 @@ let keys = {
     "Period": ">",
     "Slash": "?",
 };
+
+class KeyBoard {
+    constructor () {
+        this.down = {};
+
+        document.addEventListener('keydown', (e)=> {
+            this.down[e.code] = true;
+        });
+        document.addEventListener('keyup', (e)=> {
+            this.down[e.code] = false;
+        });
+    }
+
+    isDown (code) {
+        return code in this.down && this.down[code];
+    }
+
+    isUp (code) {
+        return !this.isDown(code);
+    }
+};
+KeyBoard.codes = codes;
+KeyBoard.keys = keys;
+
+module.exports = KeyBoard;
