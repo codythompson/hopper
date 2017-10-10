@@ -31,7 +31,6 @@ class ColorBlockRenderer extends BlockRenderer {
     this.projMatUni = gl.getUniformLocation(this.shader, 'uProjMat');
 
     this.mVMatUni = gl.getUniformLocation(this.shader, 'uMVMat');
-    this.mVMatArray = mat4.create();
 
     this.currBlockIndex = 0;
   }
@@ -66,7 +65,7 @@ class ColorBlockRenderer extends BlockRenderer {
     let gl = this.gl;
     gl.uniform2fv(this.centerBlockUni, this.camera.center);
     gl.uniformMatrix4fv(this.projMatUni, false, this.camera.projMat);
-    gl.uniformMatrix4fv(this.mVMatUni, false, this.mVMatArray);
+    gl.uniformMatrix4fv(this.mVMatUni, false, this.camera.mVMat);
   }
 
   add (block) {

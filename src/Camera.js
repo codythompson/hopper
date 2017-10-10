@@ -7,17 +7,36 @@ class Camera {
   constructor (args) {
     args = _.defaults(args, {
       blocksWide: 32,
-      blocksHigh: 32
+      blocksHigh: 32,
+      x: 0,
+      y: 0,
+      rot: 0,
+      scaleX: 1,
+      scaleY: 1,
     });
     this.gl = args.gl;
-    this.projMat = mat4.create();
     this.blocksWide = args.blocksWide;
     this.blocksHigh = args.blocksHigh;
+    this.x = args.x;
+    this.y = args.y;
+    this.rot = args.rot;
+    this.scaleX = args.scaleX;
+    this.scaleY = args.scaleY;
+    this.projMat = mat4.create();
+    this.mVMat = mat4.create();
 
-    this.resize();
+    this.updateProj();
+    this.updateMV();
   }
 
-  resize () {
+  updateMV () {
+    this.mVMat = mat4.create();
+    mat4.translate(this.mVMat, this.mVMat, new Float32Array([this.x, this.y, 0]));
+    mat4.rotateZ(this.mVMat, this.mVMat, this.rot);
+    mat4.scale(this.mVMat, this.mVMat, new Float32Array([this.scaleX, this.scaleY, 1]));
+  }
+
+  updateProj () {
     let blocksPerPixel = this.blocksHigh / this.gl.drawingBufferHeight;
     let scaledBlocksWide = blocksPerPixel * this.gl.drawingBufferWidth;
 
