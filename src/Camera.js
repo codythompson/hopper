@@ -52,7 +52,7 @@ class Camera {
   }
 
   /**
-   * @returns 4 component Float32Array [min x, min y, max x, max y]
+   * @returns 2 component Float32Array [width, height]
    */
   getVisibleDimensions () {
     let blocksPerPixel = this.blocksHigh / this.gl.drawingBufferHeight;
@@ -62,6 +62,26 @@ class Camera {
     visDims[Camera.ixWidth] = scaledBlocksWide;
     visDims[Camera.ixHeight] = this.blocksHigh;
     return visDims;
+  }
+
+  /**
+   * @returns 2 component Float32Array [left, bottom, right, top]
+   */
+  getVisibleBounds () {
+    let visDims = this.getVisibleDimensions();
+    let halfWidth = visDims[Camera.ixWidth]/2;
+    let halfHeight = visDims[Camera.ixHeight]/2;
+    let left = this.x - halfWidth;
+    let bottom = this.y - halfHeight;
+    let right = this.x + halfWidth;
+    let top = this.y + halfHeight;
+
+    let visBnds = new Float32Array(4);
+    visBnds[Camera.ixLeft] = left;
+    visBnds[Camera.ixBottom] = bottom;
+    visBnds[Camera.ixRight] = right;
+    visBnds[Camera.ixTop] = top;
+    return visBnds;
   }
 
   get center () {
