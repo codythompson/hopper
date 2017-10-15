@@ -28,10 +28,9 @@ class ColorBlockRenderer extends BlockRenderer {
     this.blockColorAtt = gl.getAttribLocation(this.shader, 'aBlockColor');
 
     this.centerBlockUni = gl.getUniformLocation(this.shader, 'uCenterBlock');
-
     this.projMatUni = gl.getUniformLocation(this.shader, 'uProjMat');
-
     this.mVMatUni = gl.getUniformLocation(this.shader, 'uMVMat');
+    this.chunkMatUni = gl.getUniformLocation(this.shader, 'uChunkMat');
 
     this.currBlockIndex = 0;
   }
@@ -62,11 +61,12 @@ class ColorBlockRenderer extends BlockRenderer {
     gl.disableVertexAttribArray(this.blockColorAtt);
   }
 
-  uniformData (camera) {
+  uniformData (camera, chunkMat) {
     let gl = this.gl;
     gl.uniform2fv(this.centerBlockUni, camera.center);
     gl.uniformMatrix4fv(this.projMatUni, false, camera.projMat);
     gl.uniformMatrix4fv(this.mVMatUni, false, camera.mVMat);
+    gl.uniformMatrix4fv(this.chunkMatUni, false, chunkMat);
   }
 
   add (block) {
@@ -113,13 +113,13 @@ class ColorBlockRenderer extends BlockRenderer {
     this.currBlockIndex++;
   }
 
-  render (camera) {
+  render (camera, chunkMat) {
     this.bufferData();
 
     let gl = this.gl;
     gl.useProgram(this.shader);
     this.enableAttribs();
-    this.uniformData(camera);
+    this.uniformData(camera, chunkMat);
     let vertCnt = this.currBlockIndex*vertsPerBlock;
     gl.drawArrays(gl.TRIANGLES, 0, vertCnt);
     this.disableAttribs();

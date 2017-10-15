@@ -18,9 +18,10 @@ class ChunkRenderer {
     }
   }
 
-  render (camera) {
+  render (camera, chunkI, chunkJ) {
+    let chunkMat = camera.getChunkMat(chunkI, chunkJ);
     for (let rendererId in this.renderersUsed) {
-      this.rendererMap[rendererId].render(camera);
+      this.rendererMap[rendererId].render(camera, chunkMat);
     }
     this.renderersUsed = {};
   }

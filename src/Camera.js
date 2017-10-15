@@ -48,6 +48,12 @@ class Camera {
     mat4.ortho(this.projMat, left, right, bottom, top, -1, 1);
   }
 
+  getChunkMat (chunkI, chunkJ) {
+    let mat = mat4.create();
+    mat4.translate(mat, mat, [chunkI*this.blocksWide, chunkJ*this.blocksHigh, 0]);
+    return mat;
+  }
+
   get center () {
     let coord = vec2.create();
     coord[0] = this.blocksWide/2;
