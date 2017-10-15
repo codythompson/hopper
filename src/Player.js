@@ -3,6 +3,7 @@ const Shaders = require('./shaders/Shaders');
 const Camera = require('./Camera');
 const ChunkRenderer = require('./ChunkRenderer');
 const ColorBlockRenderer = require('./ColorBlockRenderer');
+const Chunker = require('./Chunker');
 
 class Player {
   constructor (args) {
@@ -40,25 +41,11 @@ class Player {
       blocksHigh: 64
     });
 
-    // TODO this shouldn't be here
-    let blocks = [];
-    for (let i = 0; i < this.camera.blocksWide; i++) {
-      let col = [];
-      for (let j = 0; j < this.camera.blocksHigh; j++) {
-        col.push({
-          rendererId: 'ColorBlock',
-          colorR: (i+j)/(this.camera.blocksWide+this.camera.blocksHigh),
-          colorG: (i+j)/(this.camera.blocksWide+this.camera.blocksHigh),
-          colorB: (i+j)/(this.camera.blocksWide+this.camera.blocksHigh),
-          colorA: 1,
-          i: i,
-          j: j
-        });
-      }
-      blocks.push(col);
-    }
-    this.blocks = blocks;
-    //
+    this.chunker = new Chunker({
+      chunkWidth: this.camera.blocksWide,
+      chunkHeight: this.camera.blocksHigh,
+      chunkFiller: args.chunkFiller
+    });
 
     this.chunkRenderer = new ChunkRenderer({
       rendererMap: {
@@ -131,7 +118,8 @@ class Player {
     let [chunkLeft, chunkBottom, chunkRight, chunkTop] = this.camera.getVisibleChunkBounds();
     for (let i = Math.round(chunkLeft); i <= Math.round(chunkRight); i++) {
       for (let j = Math.round(chunkBottom); j <= Math.round(chunkTop); j++) {
-        this.chunkRenderer.addBlocks(this.blocks);
+        let blocks = this.chunker.getChunk(i, j).blocks;
+        this.chunkRenderer.addBlocks(blocks);
         this.chunkRenderer.render(this.camera, i, j);
       }
     }

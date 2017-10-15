@@ -22,6 +22,7 @@ require('../template/index.html');
 const Player = require('./Player');
 const config = require('../template/hopper.config.json');
 const DbgCamController = require('./debug/DbgCamController');
+const DbgChunkFiller = require('./debug/DbgChunkFiller');
 
 var hopper = {
   version: '0.0.0'
@@ -29,6 +30,7 @@ var hopper = {
 
 window.addEventListener('load', function () {
   hopper.player = new Player({
+    chunkFiller: new DbgChunkFiller(),
     parent: document.getElementById(config.parentElId)
   });
   // TODo THIS is broken
