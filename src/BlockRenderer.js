@@ -9,7 +9,7 @@ class BlockRenderer {
   add (block) {
     throw '[hopper][BlockRenderer][add] attempted to call abstract method.';
   }
-  render () {
+  render (camera) {
     throw '[hopper][BlockRenderer][render] attempted to call abstract method.';
   }
 }

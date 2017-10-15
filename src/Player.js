@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const Shaders = require('./shaders/Shaders');
 const Camera = require('./Camera');
+const ChunkRenderer = require('./ChunkRenderer');
 const ColorBlockRenderer = require('./ColorBlockRenderer');
 
 class Player {
@@ -39,11 +40,13 @@ class Player {
       blocksHigh: 64
     });
 
-    // TODO move this out to a chunk renderer
-    this.blockRenderer = new ColorBlockRenderer({
-      gl: gl,
-      camera: this.camera,
-      shader: this.shaders.colorBlock
+    this.chunkRenderer = new ChunkRenderer({
+      rendererMap: {
+        ColorBlock: new ColorBlockRenderer({
+          gl: gl,
+          shader: this.shaders.colorBlock
+        })
+      }
     });
 
     this.update = this.update.bind(this);
@@ -92,9 +95,12 @@ class Player {
     this.fireEvent('update', dt);
 
     // TODO this shouldn't be here
+    let blocks = [];
     for (let i = 0; i < this.camera.blocksWide; i++) {
+      let col = [];
       for (let j = 0; j < this.camera.blocksHigh; j++) {
-        this.blockRenderer.add({
+        col.push({
+          rendererId: 'ColorBlock',
           colorR: (i+j)/(this.camera.blocksWide+this.camera.blocksHigh),
           colorG: (i+j)/(this.camera.blocksWide+this.camera.blocksHigh),
           colorB: (i+j)/(this.camera.blocksWide+this.camera.blocksHigh),
@@ -103,39 +109,9 @@ class Player {
           j: j
         });
       }
+      blocks.push(col);
     }
-    // this.blockRenderer.add({
-    //   colorR: 1,
-    //   colorG: 1,
-    //   colorB: 0,
-    //   colorA: 1,
-    //   i: 16,
-    //   j: 16
-    // });
-    // this.blockRenderer.add({
-    //   colorR: 0,
-    //   colorG: 1,
-    //   colorB: 1,
-    //   colorA: 1,
-    //   i: 0,
-    //   j: 0
-    // });
-    // this.blockRenderer.add({
-    //   colorR: 0,
-    //   colorG: 1,
-    //   colorB: 1,
-    //   colorA: 1,
-    //   i: 31,
-    //   j: 31
-    // });
-    // this.blockRenderer.add({
-    //   colorR: 0,
-    //   colorG: 1,
-    //   colorB: 0.5,
-    //   colorA: 1,
-    //   i: 15,
-    //   j: 15
-    // });
+    this.chunkRenderer.addBlocks(blocks);
     //
 
     if (this.autoUpdate) {
@@ -151,7 +127,7 @@ class Player {
     let gl = this.gl;
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    this.blockRenderer.render();
+    this.chunkRenderer.render(this.camera);
 
     if (this.autoRender) {
       requestAnimationFrame(this.render);
