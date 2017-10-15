@@ -40,6 +40,26 @@ class Player {
       blocksHigh: 64
     });
 
+    // TODO this shouldn't be here
+    let blocks = [];
+    for (let i = 0; i < this.camera.blocksWide; i++) {
+      let col = [];
+      for (let j = 0; j < this.camera.blocksHigh; j++) {
+        col.push({
+          rendererId: 'ColorBlock',
+          colorR: (i+j)/(this.camera.blocksWide+this.camera.blocksHigh),
+          colorG: (i+j)/(this.camera.blocksWide+this.camera.blocksHigh),
+          colorB: (i+j)/(this.camera.blocksWide+this.camera.blocksHigh),
+          colorA: 1,
+          i: i,
+          j: j
+        });
+      }
+      blocks.push(col);
+    }
+    this.blocks = blocks;
+    //
+
     this.chunkRenderer = new ChunkRenderer({
       rendererMap: {
         ColorBlock: new ColorBlockRenderer({
@@ -94,26 +114,6 @@ class Player {
 
     this.fireEvent('update', dt);
 
-    // TODO this shouldn't be here
-    let blocks = [];
-    for (let i = 0; i < this.camera.blocksWide; i++) {
-      let col = [];
-      for (let j = 0; j < this.camera.blocksHigh; j++) {
-        col.push({
-          rendererId: 'ColorBlock',
-          colorR: (i+j)/(this.camera.blocksWide+this.camera.blocksHigh),
-          colorG: (i+j)/(this.camera.blocksWide+this.camera.blocksHigh),
-          colorB: (i+j)/(this.camera.blocksWide+this.camera.blocksHigh),
-          colorA: 1,
-          i: i,
-          j: j
-        });
-      }
-      blocks.push(col);
-    }
-    this.chunkRenderer.addBlocks(blocks);
-    //
-
     if (this.autoUpdate) {
       requestAnimationFrame(this.update);
     }
@@ -127,7 +127,14 @@ class Player {
     let gl = this.gl;
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    this.chunkRenderer.render(this.camera, 0, 0);
+
+    let [chunkLeft, chunkBottom, chunkRight, chunkTop] = this.camera.getVisibleChunkBounds();
+    for (let i = Math.round(chunkLeft); i <= Math.round(chunkRight); i++) {
+      for (let j = Math.round(chunkBottom); j <= Math.round(chunkTop); j++) {
+        this.chunkRenderer.addBlocks(this.blocks);
+        this.chunkRenderer.render(this.camera, i, j);
+      }
+    }
 
     if (this.autoRender) {
       requestAnimationFrame(this.render);
