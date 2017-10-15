@@ -31,8 +31,8 @@ class Camera {
 
   updateMV () {
     this.mVMat = mat4.create();
-    mat4.translate(this.mVMat, this.mVMat, new Float32Array([this.x, this.y, 0]));
-    mat4.rotateZ(this.mVMat, this.mVMat, this.rot);
+    mat4.translate(this.mVMat, this.mVMat, new Float32Array([-this.x, -this.y, 0]));
+    mat4.rotateZ(this.mVMat, this.mVMat, -this.rot);
     mat4.scale(this.mVMat, this.mVMat, new Float32Array([this.scaleX, this.scaleY, 1]));
   }
 
