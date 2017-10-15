@@ -84,6 +84,26 @@ class Camera {
     return visBnds;
   }
 
+  getVisibleChunkBounds () {
+    let visBnds = this.getVisibleBounds();
+    let left = visBnds[Camera.ixLeft];
+    let bottom = visBnds[Camera.ixBottom];
+    let right = visBnds[Camera.ixRight];
+    let top = visBnds[Camera.ixTop];
+
+    left /= this.blocksWide;
+    bottom /= this.blocksHigh;
+    right /= this.blocksWide;
+    top /= this.blocksHigh;
+
+    let visChunks = new Float32Array(4);
+    visChunks[Camera.ixLeft] = left;
+    visChunks[Camera.ixBottom] = bottom;
+    visChunks[Camera.ixRight] = right;
+    visChunks[Camera.ixTop] = top;
+    return visChunks;
+  }
+
   get center () {
     let coord = vec2.create();
     coord[0] = this.blocksWide/2;
