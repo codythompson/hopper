@@ -9,7 +9,6 @@ class Player {
       parent: null,
       autoUpdate: true,
       autoRender: true,
-      cameraController: null
     });
 
     var canvas = document.createElement('canvas');
@@ -29,6 +28,9 @@ class Player {
     this.autoRender = args.autoRender;
     this.kill = false;
     this.lastUpdate = null;
+    this.eventListeners = {
+      update: []
+    };
 
     this.shaders = new Shaders(gl);
     this.camera = new Camera({
@@ -36,9 +38,6 @@ class Player {
       blocksWide: 128,
       blocksHigh: 64
     });
-    if (args.cameraController) {
-      this.cameraController = args.cameraController;
-    }
 
     // TODO move this out to a chunk renderer
     this.blockRenderer = new ColorBlockRenderer({
@@ -60,6 +59,28 @@ class Player {
     }
   }
 
+  addEventListener(eventName, callback) {
+    if (eventName in this.eventListeners) {
+      this.eventListeners[eventName].push(callback);
+    } else {
+      throw `[hopper][Player][addEventListener] unknown event "${eventName}"`;
+    }
+  }
+
+  fireEvent(eventName) {
+    if (eventName in this.eventListeners) {
+      let args = [];
+      for (let i = 1; i < arguments.length; i++) {
+        args.push(arguments[i]);
+      }
+      for (let listener of this.eventListeners[eventName]) {
+        listener.call(this, args);
+      }
+    } else {
+      throw `[hopper][Player][fireEvent] unknown event "${eventName}"`;
+    }
+  }
+
   update () {
     if (this.kill) {
       return;
@@ -68,9 +89,7 @@ class Player {
     let now = Date.now();
     let dt = now - this.lastUpdate;
 
-    if (this.cameraController) {
-      this.cameraController.update(dt);
-    }
+    this.fireEvent('update', dt);
 
     // TODO this shouldn't be here
     for (let i = 0; i < this.camera.blocksWide; i++) {

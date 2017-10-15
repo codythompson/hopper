@@ -37,6 +37,10 @@ class DbgCamController extends CameraController {
         this.camera.x += this.velX;
         this.camera.y += this.velY;
 
+        if (this.velX || this.velY) {
+            return this.camera.updateMV();
+        }
+
         if (this.keyboard.isDown(Keyboard.codes.r)) {
             this.camera.x = 0;
             this.camera.y = 0;

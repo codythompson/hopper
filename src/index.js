@@ -35,7 +35,9 @@ window.addEventListener('load', function () {
   window.ctls = new DbgCamController({
     camera: hopper.player.camera
   });
-  hopper.player.cameraController = ctls;
+  hopper.player.addEventListener('update', function () {
+    window.ctls.update();
+  });
 });
 
 console.log('%chopper ' + hopper.version, 'background-color: black; color: white;');
