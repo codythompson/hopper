@@ -38,10 +38,10 @@ class Camera {
 
   updateProj () {
     let visDims = this.getVisibleDimensions();
-    let left = visDims[Camera.ixLeft];
-    let bottom = visDims[Camera.ixBottom];
-    let right = visDims[Camera.ixRight];
-    let top = visDims[Camera.ixTop];
+    let right = visDims[Camera.ixWidth]/2;
+    let top = visDims[Camera.ixHeight]/2;
+    let left = -right;
+    let bottom = -top;
     mat4.ortho(this.projMat, left, right, bottom, top, -1, 1);
   }
 
@@ -58,16 +58,9 @@ class Camera {
     let blocksPerPixel = this.blocksHigh / this.gl.drawingBufferHeight;
     let scaledBlocksWide = blocksPerPixel * this.gl.drawingBufferWidth;
 
-    let right = scaledBlocksWide/2;
-    let left = -right;
-    let top = this.blocksHigh/2;
-    let bottom = -top;
-
-    let visDims = new Float32Array(4);
-    visDims[Camera.ixLeft] = left;
-    visDims[Camera.ixBottom] = bottom;
-    visDims[Camera.ixRight] = right;
-    visDims[Camera.ixTop] = top;
+    let visDims = new Float32Array(2);
+    visDims[Camera.ixWidth] = scaledBlocksWide;
+    visDims[Camera.ixHeight] = this.blocksHigh;
     return visDims;
   }
 
@@ -79,6 +72,8 @@ class Camera {
   }
 }
 
+Camera.ixWidth = 0;
+Camera.ixHeight = 1;
 Camera.ixLeft = 0;
 Camera.ixBottom = 1;
 Camera.ixRight = 2;
