@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const vec2 = require('gl-matrix').vec2;
 const Chunk = require('./Chunk');
 
 // private fields
@@ -16,27 +17,21 @@ class Chunker {
     this.chunkFiller = args.chunkFiller;
     startI = args.startI;
     startJ = args.startJ;
-    this.colMap = new Uint16Array(args.chunkCacheWidth);
-    for (let i = 0; i < this.colMap.length; i++) {
-      this.colMap[i] = i;
-    }
-    this.rowMap = new Uint16Array(args.chunkCacheHeight);
-    for (let j = 0; j < this.rowMap.length; j++) {
-      this.rowMap[j] = j;
-    }
+    this.startIPtr = 0;
+    this.startJPtr = 0;
     this.chunkWidth = args.chunkWidth;
     this.chunkHeight = args.chunkHeight;
-    this.chunks = this.buildChunkCache();
+    this.chunks = this.buildChunkCache(this.startI, this.startJ, args.chunkCacheWidth, args.chunkCacheHeight);
   }
 
-  buildChunkCache () {
+  buildChunkCache (leftChunk, bottomChunk, chunkCacheWidth, chunkCacheHeight) {
     let chunks = [];
-    for (let i = 0; i < this.colMap.length; i++) {
+    for (let i = 0; i < chunkCacheWidth; i++) {
       let col = [];
-      for (let j = 0; j < this.rowMap.length; j++) {
+      for (let j = 0; j < chunkCacheHeight; j++) {
         let chunk = new Chunk({
-          i: i + startI,
-          j: j + startJ,
+          i: i + leftChunk,
+          j: j + bottomChunk,
           width: this.chunkWidth,
           height: this.chunkHeight
         });
@@ -48,20 +43,27 @@ class Chunker {
     return chunks;
   }
 
+  getCacheCoord (chunkI, chunkJ) {
+    let relI = chunkI - this.startI;
+    let relJ = chunkJ - this.startJ;
+    if (relI < 0 || relI >= this.cacheWidth || relJ < 0 || relJ >= this.cacheHeight) {
+      throw `[hopper][Chunker][getCacheCoord] (${chunkI}, ${chunkJ}) not in cache`;
+    }
+
+    let coord = vec2.create();
+    coord[0] = (relI + this.startIPtr) % this.cacheWidth;
+    coord[1] = (relJ + this.startJPtr) % this.cacheHeight;
+    return coord;
+  }
+
   getChunk (chunkI, chunkJ) {
-    let i = this.colMap[chunkI];
-    let j = this.rowMap[chunkJ];
+    let [i,j] = this.getCacheCoord(chunkI, chunkJ);
     return this.chunks[i][j];
   }
 
   shift (shiftI, shiftJ) {
     throw '[hopper][Chunker][shift] TODO';
   }
-
-  // inCache (chunkI, chunkJ) {
-  //   return chunkI >= this.cacheStartI && chunkI <= this.cacheEndI &&
-  //     chunkJ >= this.cacheStartJ && chunkJ <= this.cacheEndJ;
-  // }
 
   get cacheWidth () {
     return this.chunks.length;
