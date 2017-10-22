@@ -58,10 +58,10 @@ class Chunker {
     throw '[hopper][Chunker][shift] TODO';
   }
 
-  inCache (chunkI, chunkJ) {
-    return chunkI >= this.cacheStartI && chunkI <= this.cacheEndI &&
-      chunkJ >= this.cacheStartJ && chunkJ <= this.cacheEndJ;
-  }
+  // inCache (chunkI, chunkJ) {
+  //   return chunkI >= this.cacheStartI && chunkI <= this.cacheEndI &&
+  //     chunkJ >= this.cacheStartJ && chunkJ <= this.cacheEndJ;
+  // }
 
   get cacheWidth () {
     return this.chunks.length;
