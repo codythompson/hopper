@@ -116,8 +116,14 @@ class Player {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     let [chunkLeft, chunkBottom, chunkRight, chunkTop] = this.camera.getVisibleChunkBounds();
-    for (let i = Math.round(chunkLeft); i <= Math.round(chunkRight); i++) {
-      for (let j = Math.round(chunkBottom); j <= Math.round(chunkTop); j++) {
+    chunkLeft = Math.round(chunkLeft);
+    chunkBottom = Math.round(chunkBottom);
+    chunkRight = Math.round(chunkRight);
+    chunkTop = Math.round(chunkTop);
+
+    this.chunker.fillCache(chunkLeft, chunkTop);
+    for (let i = chunkLeft; i <= chunkRight; i++) {
+      for (let j = chunkBottom; j <= chunkTop; j++) {
         let blocks = this.chunker.getChunk(i, j).blocks;
         this.chunkRenderer.addBlocks(blocks);
         this.chunkRenderer.render(this.camera, i, j);

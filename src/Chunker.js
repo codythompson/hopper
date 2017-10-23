@@ -61,8 +61,49 @@ class Chunker {
     return this.chunks[i][j];
   }
 
-  shift (shiftI, shiftJ) {
-    throw '[hopper][Chunker][shift] TODO';
+  shiftRight (shiftBy) {
+    if (shiftBy >= this.cacheWidth) {
+      throw '[hopper][Chunker][shiftRight] can\'t handle shifts larger than cache width yet';
+    }
+    if (shiftBy < 0) {
+      this.shiftLeft(-shiftBy);
+    }
+
+    for (let i = 0; i < shiftBy && i < this.cacheWidth; i++) {
+      let chunkI = this.startI + this.cacheWidth + i;
+      let colI = this.startIPtr + i;
+      for (let j = 0; j < this.cacheHeight; j++) {
+        let chunk = this.chunks[colI][j];
+        chunk.i = chunkI;
+        this.chunkFiller.fillChunk(chunk);
+      }
+    }
+    let alreadyFilled = this.cacheWidth - this.startIPtr;
+    for (let i = 0; i < shiftBy - alreadyFilled; i++) {
+      let chunkI = this.startI + this.cacheWidth + alreadyFilled;
+      for (let j = 0; j < this.cacheWidth; j++) {
+        let chunk = this.chunks[i][j];
+        chunk.i = chunkI;
+        this.chunkFiller.fillChunk(chunk);
+      }
+    }
+
+    startI = startI + shiftBy;
+  }
+
+  shiftI (deltaI) {
+    if (deltaI > 0) {
+      this.shiftRight(deltaI);
+    } else if (deltaI < 0) {
+      this.shiftLeft(deltaI);
+    }
+  }
+
+  fillCache (leftMostChunk, bottomMostChunk) {
+    let deltI = leftMostChunk - this.startI;
+    if (deltI > 0) {
+      this.shiftRight(deltI);
+    }
   }
 
   get cacheWidth () {
