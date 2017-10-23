@@ -69,7 +69,7 @@ class Chunker {
       this.shiftLeft(-shiftBy);
     }
 
-    for (let i = 0; i < shiftBy && i < this.cacheWidth; i++) {
+    for (let i = 0; i < shiftBy && i + this.startIPtr < this.cacheWidth; i++) {
       let chunkI = this.startI + this.cacheWidth + i;
       let colI = this.startIPtr + i;
       for (let j = 0; j < this.cacheHeight; j++) {
