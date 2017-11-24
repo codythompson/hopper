@@ -15,6 +15,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+/*
+ * dev overlay
+ */
+const Devbox = require('./debug/DevBox');
+window.dbox = new Devbox();
 
 require('../template/hopper.css');
 require('../template/index.html');

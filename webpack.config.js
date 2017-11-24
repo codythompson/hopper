@@ -12,7 +12,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /template\/\w*\.(html|css)$/,
+        test: /(template|debug)\/\w*\.(html|css)$/,
         use: [
           {
             loader: 'file-loader',
