@@ -4,3 +4,36 @@ div.devbox {
     opacity: 0.65;
     border: 1px solid;
 }
+
+div.devbox .section {
+    margin: 2px;
+    border: 1px solid;
+}
+
+div.devbox .section-title {
+    padding: 4px;
+    background-color: #444;
+}
+
+div.devbox .section.watching .watch-item .watch-item-component {
+    display: inline-block;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 2px;
+    white-space: nowrap;
+} 
+
+div.devbox .section.watching .watch-item span.error {
+    color: red;
+}
+
+div.devbox .section.watching .label {
+    width: 35%;
+    direction: rtl;
+    text-align: right;
+}
+
+div.devbox .section.watching .value {
+    width: 65%;
+}

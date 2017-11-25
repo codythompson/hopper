@@ -20,9 +20,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 const Devbox = require('./debug/DevBox');
 let dbox = new Devbox();
-dbox.addSection({
-  title: 'test'
-});
+dbox.watch('hopper.player.chunker.chunks.length');
+dbox.watch('hopper.player.chunker.startI');
+dbox.watch('hopper.player.chunker.startJ');
+dbox.watch('hopper.player.chunker.endI');
+dbox.watch('hopper.player.chunker.endJ');
 window.dbox = dbox;
 
 require('../template/hopper.css');
