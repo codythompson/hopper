@@ -1,4 +1,5 @@
 ## TODO
 
-1. Shift/fill the chunk cache
-2. better chunk filler
+1. Chunk shifting has only resets chunk in spot 0 (see debug print out)
+2. implement shift left, up, down
+3. better chunk filler
