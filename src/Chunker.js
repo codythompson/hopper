@@ -89,6 +89,7 @@ class Chunker {
     }
 
     startI = startI + shiftBy;
+    this.startIPtr = (this.startIPtr + shiftBy) % this.cacheWidth;
   }
 
   shiftI (deltaI) {
