@@ -19,7 +19,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * dev overlay
  */
 const Devbox = require('./debug/DevBox');
-window.dbox = new Devbox();
+let dbox = new Devbox();
+dbox.addSection({
+  title: 'test'
+});
+window.dbox = dbox;
 
 require('../template/hopper.css');
 require('../template/index.html');

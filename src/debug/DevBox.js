@@ -7,6 +7,7 @@ class DevBox {
             parent: null,
             id: 'devbox',
             className: 'devbox',
+            contentClassName: 'devbox-content',
             autoUpdate: true,
         });
         args.styles = _.defaults(args.styles, {
@@ -19,7 +20,10 @@ class DevBox {
 
         this.cssEl = this.mountCSS();
 
-        this.el = this.buildEl(args);
+        let els = this.buildEl(args);
+        this.el = els.root;
+        this.contentEl = els.content;
+
         if (document.readyState === 'interactive' || document.readyState === 'complete') {
             this.mount(args.parent || document.body);
         } else {
@@ -62,11 +66,55 @@ class DevBox {
         el.id = args.id;
         el.className = args.className;
         _.extend(el.style, args.styles);
-        return el;
+        let content = document.createElement('div');
+        content.className = args.contentClassName;
+        el.appendChild(content);
+
+        return {
+            root: el,
+            content: content
+        };
     }
 
     mount (parent = document.body) {
         parent.appendChild(this.el);
+    }
+
+    addSection (args) {
+        args = _.defaults(args, {
+            class: 'section',
+            title: '',
+            titleClass: 'section-title',
+            contentClass: 'section-content',
+            onElBuilt: null,
+            onMounted: null
+        });
+        let title = document.createElement('div');
+        title.innerHTML = args.title;
+        title.className = args.titleClass;
+
+        let content = document.createElement('div');
+        content.className = args.contentClass;
+
+        let section = document.createElement('div');
+        section.className = args.class;
+
+        section.appendChild(title);
+        section.appendChild(content);
+
+        let sectionEls = {
+            root: section,
+            title: title,
+            content: content
+        };
+        if (args.onElBuilt) {
+            args.onElBuilt(sectionEls);
+        }
+
+        this.contentEl.appendChild(section);
+        if (args.onMounted) {
+            args.onMounted(sectionEls);
+        }
     }
 
     get left () {
