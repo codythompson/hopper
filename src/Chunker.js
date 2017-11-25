@@ -62,13 +62,18 @@ class Chunker {
   }
 
   shiftRight (shiftBy) {
-    if (shiftBy >= this.cacheWidth) {
+    if (Math.abs(shiftBy) >= this.cacheWidth) {
       throw '[hopper][Chunker][shiftRight] can\'t handle shifts larger than cache width yet';
     }
     if (shiftBy < 0) {
       this.shiftLeft(-shiftBy);
     }
 
+    /*
+     * fill the columns from the current startIPtr to the next startIPtr
+     * OR the end of the cache
+     * start from the current right edge of the cache plus 1, and increase
+     */
     for (let i = 0; i < shiftBy && i + this.startIPtr < this.cacheWidth; i++) {
       let chunkI = this.startI + this.cacheWidth + i;
       let colI = this.startIPtr + i;
@@ -78,6 +83,10 @@ class Chunker {
         this.chunkFiller.fillChunk(chunk);
       }
     }
+    /*
+     * fill the columns from the left edge of the cache, if we haven't shifted
+     * far enough yet.
+     */
     let alreadyFilled = this.cacheWidth - this.startIPtr;
     for (let i = 0; i < shiftBy - alreadyFilled; i++) {
       let chunkI = this.startI + this.cacheWidth + alreadyFilled;
