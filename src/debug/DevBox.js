@@ -121,6 +121,10 @@ class DevBox {
     }
 
     getValueFromScopePath (scopePath, startScope = window) {
+        if (typeof scopePath === 'function') {
+            return scopePath.call(startScope);
+        }
+
         // split the scopePath by period and trim every resulting item
         scopePath = scopePath.split('.').map(Function.prototype.call, String.prototype.trim);
         let scope = startScope;
