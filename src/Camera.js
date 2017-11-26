@@ -110,6 +110,14 @@ class Camera {
     coord[1] = this.blocksHigh/2;
     return coord;
   }
+
+  get scale () {
+    return (this.scaleX + this.scaleY) / 2;
+  }
+  set scale (val) {
+    this.scaleX = val;
+    this.scaleY = val;
+  }
 }
 
 Camera.ixWidth = 0;

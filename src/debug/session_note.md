@@ -1,6 +1,6 @@
 ## TODO
 
-1. possibly rework camera zoom
+1. figure out render bug when zoomed in
 2. better chunk filler
 
 ## longterm ideas
