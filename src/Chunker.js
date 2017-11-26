@@ -147,18 +147,14 @@ class Chunker {
   }
 
   shiftI (deltaI) {
-    if (deltaI > 0) {
+    if (deltaI !== 0) {
       this.shiftRight(deltaI);
-    } else if (deltaI < 0) {
-      this.shiftLeft(deltaI);
     }
   }
 
   fillCache (leftMostChunk, bottomMostChunk) {
     let deltI = leftMostChunk - this.startI;
-    if (deltI !== 0) {
-      this.shiftRight(deltI);
-    }
+    this.shiftI(deltI);
   }
 
   get cacheWidth () {
