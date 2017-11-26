@@ -66,7 +66,7 @@ class Chunker {
       throw '[hopper][Chunker][shiftRight] can\'t handle shifts larger than cache width yet';
     }
     if (shiftBy < 0) {
-      this.shiftLeft(-shiftBy);
+      return this.shiftLeft(-shiftBy);
     }
 
     /*
@@ -101,6 +101,51 @@ class Chunker {
     this.startIPtr = (this.startIPtr + shiftBy) % this.cacheWidth;
   }
 
+  shiftLeft (shiftBy) {
+    if (Math.abs(shiftBy) >= this.cacheWidth) {
+      throw '[hopper][Chunker][shiftLeft] can\'t handle shifts larger than cache width yet';
+    }
+    if (shiftBy < 0) {
+      return this.shiftRight(-shiftBy);
+    }
+
+    /*
+     * fill the columns from the current startIPtr to the next startIPtr
+     * OR the end of the cache
+     * start from the current left chunk coord of the cache minus 1, and decrease
+     */
+    for (let i = 1; i - 1 < shiftBy && this.startIPtr - i >= 0; i++) {
+      let chunkI = this.startI - i;
+      let colI = this.startIPtr - i;
+      for (let j = 0; j < this.cacheHeight; j++) {
+        let chunk = this.chunks[colI][j];
+        chunk.i = chunkI;
+        this.chunkFiller.fillChunk(chunk);
+      }
+    }
+    /*
+     * fill the columns from the right edge of the cache, if we haven't shifted
+     * far enough yet.
+     */
+    let alreadyFilled = this.startIPtr;
+    for (let i = 1; i - 1 < shiftBy - alreadyFilled; i++) {
+      let chunkI = this.startI - this.startIPtr - i;
+      let colI = this.cacheWidth - i;
+      for (let j = 0; j < this.cacheWidth; j++) {
+        let chunk = this.chunks[colI][j];
+        chunk.i = chunkI;
+        this.chunkFiller.fillChunk(chunk);
+      }
+    }
+
+    startI = startI - shiftBy;
+    let newPtr = this.startIPtr - shiftBy;
+    if (newPtr < 0) {
+      newPtr = (newPtr % this.cacheWidth) + this.cacheWidth;
+    }
+    this.startIPtr = newPtr;
+  }
+
   shiftI (deltaI) {
     if (deltaI > 0) {
       this.shiftRight(deltaI);
@@ -111,7 +156,7 @@ class Chunker {
 
   fillCache (leftMostChunk, bottomMostChunk) {
     let deltI = leftMostChunk - this.startI;
-    if (deltI > 0) {
+    if (deltI !== 0) {
       this.shiftRight(deltI);
     }
   }
