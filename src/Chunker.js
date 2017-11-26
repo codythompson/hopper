@@ -186,6 +186,51 @@ class Chunker {
     this.startJPtr = (this.startJPtr + shiftBy) % this.cacheHeight;
   }
 
+  shiftDown (shiftBy) {
+    if (Math.abs(shiftBy) >= this.cacheHeight) {
+      throw '[hopper][Chunker][shiftDown] can\'t handle shifts larger than cache height yet';
+    }
+    if (shiftBy < 0) {
+      return this.shiftUp(-shiftBy);
+    }
+
+    /*
+     * fill the columns from the current startIPtr to the next startIPtr
+     * OR the end of the cache
+     * start from the current left chunk coord of the cache minus 1, and decrease
+     */
+    for (let j = 1; j - 1 < shiftBy && this.startJPtr - j >= 0; j++) {
+      let chunkJ = this.startJ - j;
+      let colJ = this.startJPtr - j;
+      for (let i = 0; i < this.cacheWidth; i++) {
+        let chunk = this.chunks[i][colJ];
+        chunk.j = chunkJ;
+        this.chunkFiller.fillChunk(chunk);
+      }
+    }
+    /*
+     * fill the columns from the right edge of the cache, if we haven't shifted
+     * far enough yet.
+     */
+    let alreadyFilled = this.startJPtr;
+    for (let j = 1; j - 1 < shiftBy - alreadyFilled; j++) {
+      let chunkJ = this.startJ - this.startJPtr - j;
+      let colJ = this.cacheHeight - j;
+      for (let i = 0; i < this.cacheWidth; i++) {
+        let chunk = this.chunks[i][colJ];
+        chunk.j = chunkJ;
+        this.chunkFiller.fillChunk(chunk);
+      }
+    }
+
+    startJ = startJ - shiftBy;
+    let newPtr = this.startJPtr - shiftBy;
+    if (newPtr < 0) {
+      newPtr = (newPtr % this.cacheHeight) + this.cacheHeight;
+    }
+    this.startJPtr = newPtr;
+  }
+
   shiftI (deltaI) {
     if (deltaI !== 0) {
       this.shiftRight(deltaI);

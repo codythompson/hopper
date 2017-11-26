@@ -1,6 +1,6 @@
 ## TODO
 
-1. implement shift left, up, down
+1. possibly rework camera zoom
 2. better chunk filler
 
 ## longterm ideas
