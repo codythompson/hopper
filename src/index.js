@@ -35,7 +35,18 @@ dbox.watch(function () {
     str += chunkRow[0].i+',';
   }
   return str;
-}, window, 'chunkstate')
+}, window, 'chunkstateI')
+dbox.watch(function () {
+  if (!hopper) {
+    return 'not initialized';
+  }
+  let chunker = hopper.player.chunker;
+  let str = '';
+  for (let j = 0; j < chunker.cacheHeight; j++) {
+    str += chunker.chunks[0][j].j+',';
+  }
+  return str;
+}, window, 'chunkstateJ')
 window.dbox = dbox;
 
 require('../template/hopper.css');

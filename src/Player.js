@@ -121,7 +121,7 @@ class Player {
     chunkRight = Math.round(chunkRight);
     chunkTop = Math.round(chunkTop);
 
-    this.chunker.fillCache(chunkLeft, chunkTop);
+    this.chunker.fillCache(chunkLeft, chunkBottom);
     for (let i = chunkLeft; i <= chunkRight; i++) {
       for (let j = chunkBottom; j <= chunkTop; j++) {
         let blocks = this.chunker.getChunk(i, j).blocks;

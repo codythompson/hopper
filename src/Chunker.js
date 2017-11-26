@@ -131,7 +131,7 @@ class Chunker {
     for (let i = 1; i - 1 < shiftBy - alreadyFilled; i++) {
       let chunkI = this.startI - this.startIPtr - i;
       let colI = this.cacheWidth - i;
-      for (let j = 0; j < this.cacheWidth; j++) {
+      for (let j = 0; j < this.cacheHeight; j++) {
         let chunk = this.chunks[colI][j];
         chunk.i = chunkI;
         this.chunkFiller.fillChunk(chunk);
@@ -146,15 +146,63 @@ class Chunker {
     this.startIPtr = newPtr;
   }
 
+  shiftUp (shiftBy) {
+    if (Math.abs(shiftBy) >= this.cacheHeight) {
+      throw '[hopper][Chunker][shiftUp] can\'t handle shifts larger than cache height yet';
+    }
+    if (shiftBy < 0) {
+      return this.shiftDown(-shiftBy);
+    }
+
+    /*
+     * fill the columns from the current startJPtr to the next startJPtr
+     * OR the end of the cache
+     * start from the current top edge of the cache plus 1, and increase
+     */
+    for (let j = 0; j < shiftBy && j + this.startJPtr < this.cacheHeight; j++) {
+      let chunkJ = this.startJ + this.cacheHeight + j;
+      let colJ = this.startJPtr + j;
+      for (let i = 0; i < this.cacheWidth; i++) {
+        let chunk = this.chunks[i][colJ];
+        chunk.j = chunkJ;
+        this.chunkFiller.fillChunk(chunk);
+      }
+    }
+    /*
+     * fill the columns from the left edge of the cache, if we haven't shifted
+     * far enough yet.
+     */
+    let alreadyFilled = this.cacheHeight - this.startJPtr;
+    for (let j = 0; j < shiftBy - alreadyFilled; j++) {
+      let chunkJ = this.startJ + this.cacheHeight + alreadyFilled;
+      for (let i = 0; i < this.cacheWidth; i++) {
+        let chunk = this.chunks[i][j];
+        chunk.j = chunkJ;
+        this.chunkFiller.fillChunk(chunk);
+      }
+    }
+
+    startJ = startJ + shiftBy;
+    this.startJPtr = (this.startJPtr + shiftBy) % this.cacheHeight;
+  }
+
   shiftI (deltaI) {
     if (deltaI !== 0) {
       this.shiftRight(deltaI);
     }
   }
 
+  shiftJ (deltaJ) {
+    if (deltaJ !== 0) {
+      this.shiftUp(deltaJ);
+    }
+  }
+
   fillCache (leftMostChunk, bottomMostChunk) {
     let deltI = leftMostChunk - this.startI;
     this.shiftI(deltI);
+    let deltJ = bottomMostChunk - this.startJ;
+    this.shiftJ(deltJ);
   }
 
   get cacheWidth () {
