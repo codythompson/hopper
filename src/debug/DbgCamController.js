@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const Keyboard = require('../Keyboard');
+window.Keyboard = Keyboard;
 const CameraController = require('../CameraController');
 
 class DbgCamController extends CameraController {
@@ -37,7 +38,16 @@ class DbgCamController extends CameraController {
         this.camera.x += this.velX;
         this.camera.y += this.velY;
 
-        if (this.velX || this.velY) {
+        let scaleVel = 0;
+        if (this.keyboard.isDown("ShiftLeft")) {
+            scaleVel = 0.01;
+        }
+        if (this.keyboard.isDown(Keyboard.codes.Control)) {
+            scaleVel = -0.01;
+        }
+        this.camera.scale += scaleVel;
+
+        if (this.velX || this.velY || scaleVel) {
             return this.camera.updateMV();
         }
 
