@@ -20,11 +20,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 const Devbox = require('./debug/DevBox');
 let dbox = new Devbox();
-dbox.watch('hopper.player.chunker.chunks.length');
-dbox.watch('hopper.player.chunker.startI');
-dbox.watch('hopper.player.chunker.startJ');
-dbox.watch('hopper.player.chunker.endI');
-dbox.watch('hopper.player.chunker.endJ');
+// dbox.watch('hopper.player.chunker.chunks.length');
+// dbox.watch('hopper.player.chunker.startI');
+// dbox.watch('hopper.player.chunker.startJ');
+// dbox.watch('hopper.player.chunker.endI');
+// dbox.watch('hopper.player.chunker.endJ');
 dbox.watch(function () {
   if (!hopper) {
     return 'not initialized';
@@ -35,7 +35,7 @@ dbox.watch(function () {
     str += chunkRow[0].i+',';
   }
   return str;
-}, window, 'chunkstateI')
+}, window, 'chunkstateI');
 dbox.watch(function () {
   if (!hopper) {
     return 'not initialized';
@@ -46,7 +46,32 @@ dbox.watch(function () {
     str += chunker.chunks[0][j].j+',';
   }
   return str;
-}, window, 'chunkstateJ')
+}, window, 'chunkstateJ');
+dbox.watch(function () {
+    let [chunkLeft, chunkBottom/*, chunkRight, chunkTop*/] = hopper.player.camera.getVisibleDimensions();
+    chunkLeft = Math.round(chunkLeft);
+    chunkBottom = Math.round(chunkBottom);
+    // chunkRight = Math.round(chunkRight);
+    // chunkTop = Math.round(chunkTop);
+    // return `${chunkLeft} ${chunkBottom} ${chunkRight} ${chunkTop}`;
+    return `${chunkLeft} ${chunkBottom}`;
+}, window, 'visDims');
+dbox.watch(function () {
+    let [chunkLeft, chunkBottom, chunkRight, chunkTop] = hopper.player.camera.getVisibleBounds();
+    chunkLeft = Math.round(chunkLeft);
+    chunkBottom = Math.round(chunkBottom);
+    chunkRight = Math.round(chunkRight);
+    chunkTop = Math.round(chunkTop);
+    return `${chunkLeft} ${chunkBottom} ${chunkRight} ${chunkTop}`;
+}, window, 'visBnds');
+dbox.watch(function () {
+    let [chunkLeft, chunkBottom, chunkRight, chunkTop] = hopper.player.camera.getVisibleChunkBounds();
+    chunkLeft = Math.round(chunkLeft);
+    chunkBottom = Math.round(chunkBottom);
+    chunkRight = Math.round(chunkRight);
+    chunkTop = Math.round(chunkTop);
+    return `${chunkLeft} ${chunkBottom} ${chunkRight} ${chunkTop}`;
+}, window, 'visChunks');
 window.dbox = dbox;
 
 require('../template/hopper.css');

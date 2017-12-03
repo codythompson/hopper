@@ -31,9 +31,9 @@ class Camera {
 
   updateMV () {
     this.mVMat = mat4.create();
-    mat4.translate(this.mVMat, this.mVMat, new Float32Array([-this.x, -this.y, 0]));
-    mat4.rotateZ(this.mVMat, this.mVMat, -this.rot);
     mat4.scale(this.mVMat, this.mVMat, new Float32Array([this.scaleX, this.scaleY, 1]));
+    mat4.rotateZ(this.mVMat, this.mVMat, -this.rot);
+    mat4.translate(this.mVMat, this.mVMat, new Float32Array([-this.x, -this.y, 0]));
   }
 
   updateProj () {
@@ -55,12 +55,16 @@ class Camera {
    * @returns 2 component Float32Array [width, height]
    */
   getVisibleDimensions () {
-    let blocksPerPixel = this.blocksHigh / this.gl.drawingBufferHeight;
-    let scaledBlocksWide = blocksPerPixel * this.gl.drawingBufferWidth;
+    // TODO this could probably be done with fewer steps
+    let baseScale = this.blocksHigh / this.gl.drawingBufferHeight;
+    let blocksPerPixelX = baseScale / this.scaleX;
+    let blocksPerPixelY = baseScale / this.scaleY;
+    let scaledBlocksWide = blocksPerPixelX * this.gl.drawingBufferWidth;
+    let scaledBlocksHigh = blocksPerPixelY * this.gl.drawingBufferHeight;
 
     let visDims = new Float32Array(2);
     visDims[Camera.ixWidth] = scaledBlocksWide;
-    visDims[Camera.ixHeight] = this.blocksHigh;
+    visDims[Camera.ixHeight] = scaledBlocksHigh;
     return visDims;
   }
 
