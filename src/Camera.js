@@ -108,6 +108,24 @@ class Camera {
     return visChunks;
   }
 
+  worldToLocalChunk (x, y) {
+    let i = x % this.blocksWide;
+    let j = y % this.blocksHight;
+    let locChunk = new Float32Array(2);
+    locChunk[Camera.ixLeft] = i;
+    locChunk[Camera.ixRight] = j;
+    return locChunk;
+  }
+
+  worldToChunk (x, y) {
+    let chunkI = Math.floor(x / this.blocksWide);
+    let chunkJ = Math.floor(x / this.blocksHight);
+    let chunkCoord = new Float32Array(2);
+    chunkCoord[Camera.ixLeft] = chunkI;
+    chunkCoord[Camera.ixRight] = chunkJ;
+    return chunkCoord;
+  }
+
   get center () {
     let coord = vec2.create();
     coord[0] = this.blocksWide/2;
