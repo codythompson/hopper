@@ -37,9 +37,9 @@ class Camera {
   }
 
   updateProj () {
-    let visDims = this.getVisibleDimensions();
-    let right = visDims[Camera.ixWidth]/2;
-    let top = visDims[Camera.ixHeight]/2;
+    let [visW, visH] = this.getVisibleDimensions();
+    let right = visW/2;
+    let top = visH/2;
     let left = -right;
     let bottom = -top;
     mat4.ortho(this.projMat, left, right, bottom, top, -1, 1);
@@ -62,9 +62,7 @@ class Camera {
     let scaledBlocksWide = blocksPerPixelX * this.gl.drawingBufferWidth;
     let scaledBlocksHigh = blocksPerPixelY * this.gl.drawingBufferHeight;
 
-    let visDims = new Float32Array(2);
-    visDims[Camera.ixWidth] = scaledBlocksWide;
-    visDims[Camera.ixHeight] = scaledBlocksHigh;
+    let visDims = new Float32Array([scaledBlocksWide, scaledBlocksHigh]);
     return visDims;
   }
 
@@ -72,57 +70,45 @@ class Camera {
    * @returns 2 component Float32Array [left, bottom, right, top]
    */
   getVisibleBounds () {
-    let visDims = this.getVisibleDimensions();
-    let halfWidth = visDims[Camera.ixWidth]/2;
-    let halfHeight = visDims[Camera.ixHeight]/2;
+    let [visW, visH] = this.getVisibleDimensions();
+    let halfWidth = visW/2;
+    let halfHeight = visH/2;
     let left = this.x - halfWidth;
     let bottom = this.y - halfHeight;
     let right = this.x + halfWidth;
     let top = this.y + halfHeight;
 
-    let visBnds = new Float32Array(4);
-    visBnds[Camera.ixLeft] = left;
-    visBnds[Camera.ixBottom] = bottom;
-    visBnds[Camera.ixRight] = right;
-    visBnds[Camera.ixTop] = top;
+    let visBnds = new Float32Array([
+      left,
+      bottom,
+      right,
+      top
+    ]);
     return visBnds;
   }
 
   getVisibleChunkBounds () {
-    let visBnds = this.getVisibleBounds();
-    let left = visBnds[Camera.ixLeft];
-    let bottom = visBnds[Camera.ixBottom];
-    let right = visBnds[Camera.ixRight];
-    let top = visBnds[Camera.ixTop];
+    let [visLeft, visBottom, visRight, visTop] = this.getVisibleBounds();
+    let left = visLeft / this.blocksWide;
+    let bottom = visBottom / this.blocksHigh;
+    let right = visRight / this.blocksWide;
+    let top = visTop / this.blocksHigh;
 
-    left /= this.blocksWide;
-    bottom /= this.blocksHigh;
-    right /= this.blocksWide;
-    top /= this.blocksHigh;
-
-    let visChunks = new Float32Array(4);
-    visChunks[Camera.ixLeft] = left;
-    visChunks[Camera.ixBottom] = bottom;
-    visChunks[Camera.ixRight] = right;
-    visChunks[Camera.ixTop] = top;
+    let visChunks = new Float32Array([left, bottom, right, top]);
     return visChunks;
   }
 
   worldToLocalChunk (x, y) {
     let i = x % this.blocksWide;
-    let j = y % this.blocksHight;
-    let locChunk = new Float32Array(2);
-    locChunk[Camera.ixLeft] = i;
-    locChunk[Camera.ixRight] = j;
+    let j = y % this.blocksHigh;
+    let locChunk = new Float32Array([i, j]);
     return locChunk;
   }
 
   worldToChunk (x, y) {
     let chunkI = Math.floor(x / this.blocksWide);
-    let chunkJ = Math.floor(x / this.blocksHight);
-    let chunkCoord = new Float32Array(2);
-    chunkCoord[Camera.ixLeft] = chunkI;
-    chunkCoord[Camera.ixRight] = chunkJ;
+    let chunkJ = Math.floor(x / this.blocksHigh);
+    let chunkCoord = new Float32Array([chunkI, chunkJ]);
     return chunkCoord;
   }
 
@@ -141,12 +127,5 @@ class Camera {
     this.scaleY = val;
   }
 }
-
-Camera.ixWidth = 0;
-Camera.ixHeight = 1;
-Camera.ixLeft = 0;
-Camera.ixBottom = 1;
-Camera.ixRight = 2;
-Camera.ixTop = 3;
 
 module.exports = Camera;
