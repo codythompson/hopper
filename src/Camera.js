@@ -107,7 +107,7 @@ class Camera {
 
   worldToChunk (x, y) {
     let chunkI = Math.floor(x / this.blocksWide);
-    let chunkJ = Math.floor(x / this.blocksHigh);
+    let chunkJ = Math.floor(y / this.blocksHigh);
     let chunkCoord = new Float32Array([chunkI, chunkJ]);
     return chunkCoord;
   }
