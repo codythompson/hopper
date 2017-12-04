@@ -9,7 +9,9 @@ class Entity {
     _.extend(this, args);
   }
 
-  getBlocks () {
+  getBlocks (camera) {
     throw '[hopper][Entity][getBlocks] tried to call abstract method.';
   }
 }
+
+module.exports = Entity;

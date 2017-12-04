@@ -81,6 +81,7 @@ const Player = require('./Player');
 const config = require('../template/hopper.config.json');
 const DbgCamController = require('./debug/DbgCamController');
 const DbgChunkFiller = require('./debug/DbgChunkFiller');
+const BlockEntity = require('./BlockEntity');
 
 var hopper = {
   version: '0.0.0'
@@ -91,10 +92,14 @@ window.addEventListener('load', function () {
     chunkFiller: new DbgChunkFiller(),
     parent: document.getElementById(config.parentElId)
   });
-  // TODo THIS is broken
   window.ctls = new DbgCamController({
     camera: hopper.player.camera
   });
+  window.box1 = new BlockEntity({
+    x: 64,
+    y: 32
+  });
+  hopper.player.entityManager.addEntity(window.box1);
   hopper.player.addEventListener('update', function () {
     window.ctls.update();
   });

@@ -4,6 +4,7 @@ const Camera = require('./Camera');
 const ChunkRenderer = require('./ChunkRenderer');
 const ColorBlockRenderer = require('./ColorBlockRenderer');
 const Chunker = require('./Chunker');
+const EntityManager = require('./EntityManager');
 
 class Player {
   constructor (args) {
@@ -41,12 +42,6 @@ class Player {
       blocksHigh: 64
     });
 
-    this.chunker = new Chunker({
-      chunkWidth: this.camera.blocksWide,
-      chunkHeight: this.camera.blocksHigh,
-      chunkFiller: args.chunkFiller
-    });
-
     this.chunkRenderer = new ChunkRenderer({
       rendererMap: {
         ColorBlock: new ColorBlockRenderer({
@@ -54,6 +49,17 @@ class Player {
           shader: this.shaders.colorBlock
         })
       }
+    });
+
+    this.chunker = new Chunker({
+      chunkWidth: this.camera.blocksWide,
+      chunkHeight: this.camera.blocksHigh,
+      chunkFiller: args.chunkFiller
+    });
+
+    this.entityManager = new EntityManager({
+      camera: this.camera,
+      chunkRenderer: this.chunkRenderer
     });
 
     this.update = this.update.bind(this);
@@ -101,6 +107,8 @@ class Player {
 
     this.fireEvent('update', dt);
 
+    this.entityManager.update(dt);
+
     if (this.autoUpdate) {
       requestAnimationFrame(this.update);
     }
@@ -129,6 +137,8 @@ class Player {
         this.chunkRenderer.render(this.camera, i, j);
       }
     }
+
+    this.entityManager.render();
 
     if (this.autoRender) {
       requestAnimationFrame(this.render);
