@@ -1,3 +1,5 @@
+const Block = require('./Block');
+
 class ChunkRenderer {
   constructor (args) {
     this.rendererMap = args.rendererMap;
@@ -12,8 +14,14 @@ class ChunkRenderer {
 
   addBlocks (blocks) {
     for (let col of blocks) {
-      for (let block of col) {
-        this.addBlock(block);
+      if (Array.isArray(col)) {
+        for (let block of col) {
+          this.addBlock(block);
+        }
+      } else if (col instanceof Block) { // if 
+        this.addBlock(col);
+      } else {
+        throw '[hopper][ChunkRenderer][addBlocks] array element isn\'t array or Block';
       }
     }
   }
