@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const p2 = require('p2');
 
 /*
  * private varaibles object
@@ -15,7 +16,10 @@ class EntityManager {
       throw '[hopper][EntityManager][constructor] "camera" must exist in the args obj and be of type object.'
     }
     args = _.defaults(args, {
-      chunkRenderer: null
+      chunkRenderer: null,
+      physicsArgs: {
+        gravity: [0, -1]
+      }
     });
 
     /*
@@ -24,7 +28,8 @@ class EntityManager {
     _.extend(this, {
       camera: args.camera,
       chunkRenderer: args.chunkRenderer,
-      needsSort: true
+      needsSort: true,
+      world: new p2.World(args.physicsArgs)
     });
     /*
      * private fields
@@ -38,6 +43,7 @@ class EntityManager {
 
   addEntity (entity) {
     priv.entities.push(entity);
+    this.world.addBody(entity.getBody());
     this.needsSort = true;
   }
 
@@ -72,7 +78,20 @@ class EntityManager {
       this.sort();
       this.needsSort = false;
     }
-    // TODO update physics objects
+
+    for (let entity of priv.entities) {
+      entity.preUpdate(dt);
+    }
+
+    // TODO make this configurable
+    const stepTime = 1/60;
+    const maxSubSteps = 10;
+    
+    this.world.step(stepTime, dt, maxSubSteps);
+
+    for (let entity of priv.entities) {
+      entity.update(dt);
+    }
   }
 
   render () { 

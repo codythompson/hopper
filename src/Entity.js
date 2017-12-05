@@ -9,8 +9,22 @@ class Entity {
     _.extend(this, args);
   }
 
+  preUpdate (dt) {
+    // this.getBody().position = [this.x, this.y];
+  }
+
+  update (dt) {
+    let [interpX, interpY] = this.getBody().interpolatedPosition;
+    this.x = interpX;
+    this.y = interpY;
+  }
+
   getBlocks (camera) {
     throw '[hopper][Entity][getBlocks] tried to call abstract method.';
+  }
+
+  getBody () {
+    throw '[hopper][Entity][getBody] tried to call abstract method.';
   }
 }
 

@@ -97,7 +97,8 @@ window.addEventListener('load', function () {
   });
   window.box1 = new BlockEntity({
     x: 64,
-    y: 32
+    y: 32,
+    mass: 1
   });
   hopper.player.entityManager.addEntity(window.box1);
   hopper.player.addEventListener('update', function () {
