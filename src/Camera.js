@@ -112,7 +112,13 @@ class Camera {
 
   worldToLocalChunk (x, y) {
     let i = x % this.blocksWide;
+    if (i < 0) {
+      i += this.blocksWide;
+    }
     let j = y % this.blocksHigh;
+    if (j < 0) {
+      j += this.blocksHigh;
+    }
     let locChunk = new Float32Array([i, j]);
     return locChunk;
   }
