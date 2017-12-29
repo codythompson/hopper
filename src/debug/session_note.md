@@ -1,9 +1,10 @@
 ## TODO
 
-1. add p2js or physicsjs to entity's (and blocks?)
-2. better chunk filler
-3. I changed the order of transformations for the camera's MV mat. This mightve accidentally worked and have onforeseen consequences.
-4. add fps to dev box
+1. add massless bodies to some chunks 
+2. add p2 collision materials, or whatever is needed for chunk platforms
+3. better chunk filler
+4. I changed the order of transformations for the camera's MV mat. This mightve accidentally worked and have onforeseen consequences.
+5. add fps to dev box
 
 ## longterm ideas
 - asynch chunk filling via webworkers
