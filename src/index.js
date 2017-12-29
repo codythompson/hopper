@@ -72,7 +72,19 @@ dbox.watch(function () {
     chunkTop = Math.round(chunkTop);
     return `${chunkLeft} ${chunkBottom} ${chunkRight} ${chunkTop}`;
 }, window, 'visChunks');
+dbox.watch(function () {
+  let str = '';
+  for (let rndrInfo of window.renderList) {
+    str += `${rndrInfo.i},${rndrInfo.j} ${rndrInfo.cnt}<br/>`;
+  }
+  return str;
+}, window, 'rndrList');
 window.dbox = dbox;
+/*
+ * end dev overlay
+ */
+
+const p2 = require('p2');
 
 require('../template/hopper.css');
 require('../template/index.html');
@@ -98,9 +110,10 @@ window.addEventListener('load', function () {
   window.box1 = new BlockEntity({
     x: 64,
     y: 32,
-    mass: 1
+    // mass: 1
   });
-  hopper.player.entityManager.addEntity(window.box1);
+  window.box1.body.type = p2.Body.KINEMATIC;
+  hopper.player.entityManager.add(window.box1);
   hopper.player.addEventListener('update', function () {
     window.ctls.update();
   });

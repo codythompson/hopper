@@ -9,6 +9,7 @@ let priv = {};
 /**
  * @class EntityManager
  * @todo actually get entities from a chunk
+ * @todo disable or remove bodies from p2 when not visible
 */
 class EntityManager {
   constructor (args) {
@@ -19,7 +20,8 @@ class EntityManager {
       chunkRenderer: null,
       physicsArgs: {
         gravity: [0, -1]
-      }
+      },
+      update_margin: 2
     });
 
     /*
@@ -28,60 +30,80 @@ class EntityManager {
     _.extend(this, {
       camera: args.camera,
       chunkRenderer: args.chunkRenderer,
-      needsSort: true,
+      update_margin: args.update_margin,
       world: new p2.World(args.physicsArgs)
     });
     /*
      * private fields
      */
     _.extend (priv, {
-      chunks: {},
-      // TODO don't just store this
-      entities: []
+      chunks: {}
     });
   }
 
-  addEntity (entity) {
-    priv.entities.push(entity);
+  add (entity) {
+    let [chunkI, chunkJ] = this.camera.worldToChunk(entity.x, entity.y);
+    this.addToChunk(entity, chunkI, chunkJ);
     this.world.addBody(entity.getBody());
-    this.needsSort = true;
   }
 
-  sort () {
-    priv.chunks = {};
-    for (let entity of priv.entities) {
-      let [chunkI, chunkJ] = this.camera.worldToChunk(entity.x, entity.y);
+  addToChunk (entity, chunkI, chunkJ) {
+    if (!this.chunkExists(chunkI, chunkJ)) {
       if (!(chunkI in priv.chunks)) {
         priv.chunks[chunkI] = {};
       }
       if (!(chunkJ in priv.chunks[chunkI])) {
         priv.chunks[chunkI][chunkJ] = [];
       }
-      priv.chunks[chunkI][chunkJ].push(entity);
     }
+    this.getChunk(chunkI, chunkJ).push(entity);
   }
 
-  entitiesIn (chunkI, chunkJ) {
+  move (entityIx, oldChunkI, oldChunkJ, newChunkI, newChunkJ) {
+    let oldChunk = this.getChunk(oldChunkI, oldChunkJ);
+
+    if (!Array.isArray(oldChunk) || entityIx < 0 || entityIx >= oldChunk.length) {
+      throw '[EntityManager][move] invalid chunk coords';
+    }
+
+    let [entity] = oldChunk.splice(entityIx, 1);
+    this.addToChunk(entity, newChunkI, newChunkJ);
+    console.log(`moved from ${oldChunkI},${oldChunkJ} to ${newChunkI},${newChunkJ}`);
+  }
+
+  chunkExists (chunkI, chunkJ) {
     return chunkI in priv.chunks && chunkJ in priv.chunks[chunkI];
   }
 
-  getEntities (chunkI, chunkJ) {
-    if (this.entitiesIn(chunkI, chunkJ)) {
+  getChunk (chunkI, chunkJ) {
+    if (this.chunkExists(chunkI, chunkJ)) {
       return priv.chunks[chunkI][chunkJ];
     } else {
-      return [];
+      return null;
     }
   }
 
-  update (dt) {
-    if (this.needsSort) {
-      this.sort();
-      this.needsSort = false;
+  forEachInRange (minChunkI, minChunkJ, maxChunkI, maxChunkJ, iterFunc) {
+    for (let i = minChunkI; i < maxChunkJ; i++) {
+      for (let j = minChunkJ; j < maxChunkJ; j++) {
+        iterFunc(this.getChunk(i, j), i, j);
+      }
     }
+  }
 
-    for (let entity of priv.entities) {
-      entity.preUpdate(dt);
-    }
+  forEachInVisibleRange (margin, iterFunc) {
+    let [left, bottom, right, top] = this.camera.getRoundedVisibleChunkBounds(margin);
+    this.forEachInRange(left, bottom, right, top, iterFunc);
+  }
+
+  update (dt) {
+    this.forEachInVisibleRange(this.update_margin, (chunk)=>{
+      if (Array.isArray(chunk)) {
+        for (let entity of chunk) {
+          entity.preUpdate(dt);
+        }
+      }
+    });
 
     // TODO make this configurable
     const stepTime = 1/60;
@@ -89,8 +111,35 @@ class EntityManager {
     
     this.world.step(stepTime, dt, maxSubSteps);
 
-    for (let entity of priv.entities) {
-      entity.update(dt);
+    /*
+     * for each entity in the visible chunk range
+     * run their update function, which sets their new x and y
+     * to match their physics body's x and y
+     * and then figure out if they changed chunks
+     */
+    let toMove = [];
+    this.forEachInVisibleRange(this.update_margin, (chunk, i, j)=>{
+      if (Array.isArray(chunk)) {
+        for (let entIx = 0; entIx < chunk.length; entIx++) {
+          let entity = chunk[entIx];
+          entity.update(dt);
+          let [chunkI, chunkJ] = this.camera.worldToChunk(entity.x, entity.y);
+          if (chunkI !== i || chunkJ !== j) {
+            toMove.push({entIx, i, j, chunkI, chunkJ});
+          }
+        }
+      }
+    });
+
+    /*
+     * move all of the entities that changed chunks
+     */
+    for (let moveInfo of toMove) {
+      // moveInfo.i is old chunkI
+      // moveInfo.j is old chunkJ
+      // moveInfo.chunkI is new chunkI
+      // moveInfo.chunkJ is new chunkJ
+      this.move(moveInfo.entIx, moveInfo.i, moveInfo.j, moveInfo.chunkI, moveInfo.chunkJ);
     }
   }
 
@@ -99,18 +148,19 @@ class EntityManager {
       return;
     }
 
-    let chunkBnds = this.camera.getVisibleChunkBounds();
-    for (let i = 0; i < chunkBnds.length; i++) {
-      chunkBnds[i] = Math.round(chunkBnds[i]);
-    }
-    let [chunkLeft, chunkBottom, chunkRight, chunkTop] = chunkBnds;
+    window.renderList = [];
 
-    for (let i = chunkLeft; i <= chunkRight; i++) {
-      for (let j = chunkBottom; j <= chunkTop; j++) {
-        for (let entity of this.getEntities(i, j)) {
-          this.chunkRenderer.addBlocks(entity.getBlocks(this.camera));
+    let [left, bottom, right, top] = this.camera.getRoundedVisibleChunkBounds(this.update_margin);
+    for (let i = left; i <= right; i++) {
+      for (let j = bottom; j <= top; j++) {
+        let chunk = this.getChunk(i, j);
+        if (Array.isArray(chunk)) {
+          renderList.push({i, j, cnt: chunk.length});
+          for (let entity of chunk) {
+            this.chunkRenderer.addBlocks(entity.getBlocks(this.camera));
+          }
+          this.chunkRenderer.render(this.camera, i, j);
         }
-        this.chunkRenderer.render(this.camera, i, j);
       }
     }
   }

@@ -98,6 +98,18 @@ class Camera {
     return visChunks;
   }
 
+  getRoundedVisibleChunkBounds(margin=0) {
+    let bnds = this.getVisibleChunkBounds();
+    for (let i = 0; i < bnds.length; i++) {
+      bnds[i] = Math.round(bnds[i]);
+    }
+    bnds[0] -= margin;
+    bnds[1] -= margin;
+    bnds[2] += margin;
+    bnds[3] += margin;
+    return bnds;
+  }
+
   worldToLocalChunk (x, y) {
     let i = x % this.blocksWide;
     let j = y % this.blocksHigh;

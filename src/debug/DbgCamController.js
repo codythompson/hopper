@@ -57,6 +57,32 @@ class DbgCamController extends CameraController {
             this.velX = 0;
             this.velY = 0;
         }
+
+        // debug box1
+        let keyedY = false;
+        if (this.keyboard.isDown(Keyboard.codes.s)) {
+            window.box1.body.velocity[1] -= 0.1;
+            keyedY = true;
+        }
+        if (this.keyboard.isDown(Keyboard.codes.w)) {
+            window.box1.body.velocity[1] += 0.1;
+            keyedY = true;
+        }
+        if (!keyedY) {
+            window.box1.body.velocity[1] = 0;
+        }
+        let keyedX = false;
+        if (this.keyboard.isDown(Keyboard.codes.a)) {
+            window.box1.body.velocity[0] -= 0.1;
+            keyedX = true;
+        }
+        if (this.keyboard.isDown(Keyboard.codes.d)) {
+            window.box1.body.velocity[0] += 0.1;
+            keyedX = true;
+        }
+        if (!keyedX) {
+            window.box1.body.velocity[0] = 0;
+        }
     }
 }
 
