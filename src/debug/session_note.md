@@ -1,6 +1,7 @@
 ## TODO
 
-1. add massless bodies to some chunks 
+1. add a massless body each chunk, and some shapes to some blocks 
+  - Where do the bodies live?
 2. add p2 collision materials, or whatever is needed for chunk platforms
 3. better chunk filler
 4. I changed the order of transformations for the camera's MV mat. This mightve accidentally worked and have onforeseen consequences.
