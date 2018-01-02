@@ -130,6 +130,13 @@ class Camera {
     return chunkCoord;
   }
 
+  chunkToWorld (i, j) {
+    let x = i * chunkI;
+    let y = j * chunkJ;
+    let chunkCoord = new Float32Array([x, y]);
+    return chunkCoord;
+  }
+
   get center () {
     let coord = vec2.create();
     coord[0] = this.blocksWide/2;

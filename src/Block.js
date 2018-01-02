@@ -7,6 +7,7 @@ class Block {
     }
     args = _.defaults(args, {
       rendererId: 'ColorBlock',
+      shapeId: null,
       colorR: 1,
       colorG: 1,
       colorB: 1,
