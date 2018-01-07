@@ -263,6 +263,14 @@ class Chunker {
     this.shiftJ(deltJ);
   }
 
+  update () {
+    let [chunkLeft, chunkBottom] = this.camera.getVisibleChunkBounds();
+    chunkLeft = Math.round(chunkLeft);
+    chunkBottom = Math.round(chunkBottom);
+
+    this.fillCache(chunkLeft, chunkBottom);
+  }
+
   render () {
     let [chunkLeft, chunkBottom, chunkRight, chunkTop] = this.camera.getVisibleChunkBounds();
     chunkLeft = Math.round(chunkLeft);

@@ -109,6 +109,7 @@ class Player {
 
     this.fireEvent('update', dt);
 
+    this.chunker.update();
     this.entityManager.update(dt);
 
     if (this.autoUpdate) {
@@ -131,7 +132,6 @@ class Player {
     chunkRight = Math.round(chunkRight);
     chunkTop = Math.round(chunkTop);
 
-    this.chunker.fillCache(chunkLeft, chunkBottom);
     this.chunker.render();
     this.entityManager.render();
 
