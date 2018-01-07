@@ -7,7 +7,18 @@ var startI = 0;
 var startJ = 0;
 
 class Chunker {
+  /**
+   * @param {object} args 
+   * @param {Camera} camera the world's camera to use when render is called
+   * @param {ChunkRenderer} chunkRenderer the chunk renderer to use when render is called
+   */
   constructor (args) {
+    if (!args.camera) {
+      throw '[hopper][Chunker][constructor] "camera" is a required arg';
+    }
+    if (!args.chunkRenderer) {
+      throw '[hopper][Chunker][constructor] "chunkRenderer" is a required arg';
+    }
     args = _.defaults(args, {
       chunkCacheWidth: 8,
       chunkCacheHeight: 8,
@@ -22,6 +33,8 @@ class Chunker {
     this.chunkWidth = args.chunkWidth;
     this.chunkHeight = args.chunkHeight;
     this.chunks = this.buildChunkCache(this.startI, this.startJ, args.chunkCacheWidth, args.chunkCacheHeight);
+    this.camera = args.camera;
+    this.chunkRenderer = args.chunkRenderer;
   }
 
   buildChunkCache (leftChunk, bottomChunk, chunkCacheWidth, chunkCacheHeight) {
@@ -248,6 +261,26 @@ class Chunker {
     this.shiftI(deltI);
     let deltJ = bottomMostChunk - this.startJ;
     this.shiftJ(deltJ);
+  }
+
+  render () {
+    let [chunkLeft, chunkBottom, chunkRight, chunkTop] = this.camera.getVisibleChunkBounds();
+    chunkLeft = Math.round(chunkLeft);
+    chunkBottom = Math.round(chunkBottom);
+    chunkRight = Math.round(chunkRight);
+    chunkTop = Math.round(chunkTop);
+
+    for (let i = chunkLeft; i <= chunkRight; i++) {
+      for (let j = chunkBottom; j <= chunkTop; j++) {
+        try {
+          let blocks = this.getChunk(i, j).blocks;
+          this.chunkRenderer.addBlocks(blocks);
+          this.chunkRenderer.render(this.camera, i, j);
+        } catch (e) {
+          console.warn(`[hopper][Chunker][render] chunk ${i},${j} not in cache`);
+        }
+      }
+    }
   }
 
   get cacheWidth () {

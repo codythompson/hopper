@@ -52,6 +52,8 @@ class Player {
     });
 
     this.chunker = new Chunker({
+      camera: this.camera,
+      chunkRenderer: this.chunkRenderer,
       chunkWidth: this.camera.blocksWide,
       chunkHeight: this.camera.blocksHigh,
       chunkFiller: args.chunkFiller
@@ -130,14 +132,7 @@ class Player {
     chunkTop = Math.round(chunkTop);
 
     this.chunker.fillCache(chunkLeft, chunkBottom);
-    for (let i = chunkLeft; i <= chunkRight; i++) {
-      for (let j = chunkBottom; j <= chunkTop; j++) {
-        let blocks = this.chunker.getChunk(i, j).blocks;
-        this.chunkRenderer.addBlocks(blocks);
-        this.chunkRenderer.render(this.camera, i, j);
-      }
-    }
-
+    this.chunker.render();
     this.entityManager.render();
 
     if (this.autoRender) {
