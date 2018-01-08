@@ -102,7 +102,10 @@ var hopper = {
 window.addEventListener('load', function () {
   hopper.player = new Player({
     chunkFiller: new DbgChunkFiller(),
-    parent: document.getElementById(config.parentElId)
+    parent: document.getElementById(config.parentElId),
+    physicsArgs: {
+      gravity: [0, -0.1]
+    }
   });
   window.ctls = new DbgCamController({
     camera: hopper.player.camera
@@ -110,9 +113,9 @@ window.addEventListener('load', function () {
   window.box1 = new BlockEntity({
     x: 64,
     y: 32,
-    // mass: 1
+    mass: 1
   });
-  window.box1.body.type = p2.Body.KINEMATIC;
+  // window.box1.body.type = p2.Body.KINEMATIC;
   hopper.player.entityManager.add(window.box1);
   hopper.player.addEventListener('update', function () {
     window.ctls.update();

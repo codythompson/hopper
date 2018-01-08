@@ -5,3 +5,5 @@ class SquareShapeBuilder {
     return new p2.Box({width: 1, height: 1});
   }
 }
+
+module.exports = SquareShapeBuilder;

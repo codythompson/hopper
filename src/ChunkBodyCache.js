@@ -24,7 +24,7 @@ class ChunkBodyCache {
 
     let cache = [];
     for (let i = 0; i < args.size; i++) {
-      cahce.push({
+      cache.push({
         body: null,
         i: null,
         j: null
@@ -34,7 +34,8 @@ class ChunkBodyCache {
     priv = {
       cache: cache,
       cachePtr: 0,
-      cacheMap: {}
+      cacheMap: {},
+      world: args.world
     };
   }
 
@@ -100,17 +101,20 @@ class ChunkBodyCache {
     } else {
       let cache = priv.cache[priv.cachePtr];
 
-      // if we are overwriting an existing entry
-      // lets clear it out of the cachemap
-      // and remove it from the world
-      this.deleteCacheMapEntry(cache.i, cache.j);
-      priv.world.removeBody(cache.body);
+      if (this.hasBody(cache.i, cache.j)) {
+        // if we are overwriting an existing entry
+        // lets clear it out of the cachemap
+        // and remove it from the world
+        this.deleteCacheMapEntry(cache.i, cache.j);
+        priv.world.removeBody(cache.body);
+      }
 
       // reset the cache entry
       priv.world.addBody(body);
       cache.i = i;
       cache.j = j;
       cache.body = body;
+      this.addCacheMapEntry(i, j, priv.cachePtr);
 
       // increment the cache pointer and rollover if necessary
       priv.cachePtr++;

@@ -16,11 +16,11 @@ class EntityManager {
     if (typeof args.camera !== 'object') {
       throw '[hopper][EntityManager][constructor] "camera" must exist in the args obj and be of type object.'
     }
+    if (!args.world) {
+      throw '[hopper][EntityManager][constructor] "world" is a required arg';
+    }
     args = _.defaults(args, {
       chunkRenderer: null,
-      physicsArgs: {
-        gravity: [0, -1]
-      },
       update_margin: 2
     });
 
@@ -31,7 +31,7 @@ class EntityManager {
       camera: args.camera,
       chunkRenderer: args.chunkRenderer,
       update_margin: args.update_margin,
-      world: new p2.World(args.physicsArgs)
+      world: args.world
     });
     /*
      * private fields

@@ -131,8 +131,8 @@ class Camera {
   }
 
   chunkToWorld (i, j) {
-    let x = i * chunkI;
-    let y = j * chunkJ;
+    let x = i * this.blocksWide;
+    let y = j * this.blocksHigh;
     let chunkCoord = new Float32Array([x, y]);
     return chunkCoord;
   }

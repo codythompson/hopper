@@ -1,3 +1,4 @@
+const p2 = require('p2');
 const ChunkBodyCache = require('./ChunkBodyCache');
 
 let priv = null;
@@ -6,8 +7,9 @@ class ChunkBodyBuilder {
   /**
    * @constructor
    * @param {*} args the arguments object
-   * @param {object} args.buildMap an object that maps a shapeId to an instance of BlockShapeBuilder
+   * @param {object} args.builderMap an object that maps a shapeId to an instance of BlockShapeBuilder
    * @param {number} [args.bodyCacheSize] the size of the cache that will store the bodys
+   * @param {p2.World} [args.world] the p2 World that will store the bodies
    */
   constructor (args) {
     if (typeof args !== 'object') {
@@ -16,11 +18,15 @@ class ChunkBodyBuilder {
     if (!args.builderMap) {
       throw '[hopper][ChunkBodyBuilder][constructor] "builderMap" is a required arg.';
     }
+    if (!args.world) {
+      throw '[hopper][ChunkBodyBuilder][constructor] "world" is a required arg.';
+    }
     this.builderMap = args.builderMap;
 
     priv = {
       bodyCache: new ChunkBodyCache({
-        size: args.bodyCacheSize
+        size: args.bodyCacheSize,
+        world: args.world
       })
     };
   }
@@ -33,7 +39,10 @@ class ChunkBodyBuilder {
     return this.builderMap[shapeId].buildShape();
   }
 
-  buildBody (camera, chunkI, chunkJ) {
+  buildBody (camera, chunk) {
+    let chunkI = chunk.i;
+    let chunkJ = chunk.j;
+
     // if the body exists in the cache, return it
     if (priv.bodyCache.hasBody(chunkI, chunkJ)) {
       return priv.bodyCache.getBody(chunkI, chunkJ);
@@ -46,10 +55,9 @@ class ChunkBodyBuilder {
       mass: 0,
       position: pos
     })
-    for (let i = 0; i < blocks.length; i++) {
-      let col = blocks[i];
-      for (let j = 0; j < col.length; j++) {
-        let block = col[j];
+    for (let i = 0; i < chunk.width; i++) {
+      for (let j = 0; j < chunk.height; j++) {
+        let block = chunk.getBlock(i, j);
         let shape = this.buildShape(block);
         if (shape !== null) { // maybe instance of p2.Shape instead?
           body.addShape(shape, [i, j]);
@@ -60,3 +68,5 @@ class ChunkBodyBuilder {
     return body;
   }
 }
+
+module.exports = ChunkBodyBuilder;

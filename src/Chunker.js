@@ -11,6 +11,7 @@ class Chunker {
    * @param {object} args 
    * @param {Camera} camera the world's camera to use when render is called
    * @param {ChunkRenderer} chunkRenderer the chunk renderer to use when render is called
+   * @param {ChunkBodyBuilder} chunkBodyBuilder the chunk body builder to build the chunks bodies and shapes with
    */
   constructor (args) {
     if (!args.camera) {
@@ -18,6 +19,9 @@ class Chunker {
     }
     if (!args.chunkRenderer) {
       throw '[hopper][Chunker][constructor] "chunkRenderer" is a required arg';
+    }
+    if (!args.chunkBodyBuilder) {
+      throw '[hopper][Chunker][constructor] "chunkBodyBuilder" is a required arg';
     }
     args = _.defaults(args, {
       chunkCacheWidth: 8,
@@ -35,6 +39,7 @@ class Chunker {
     this.chunks = this.buildChunkCache(this.startI, this.startJ, args.chunkCacheWidth, args.chunkCacheHeight);
     this.camera = args.camera;
     this.chunkRenderer = args.chunkRenderer;
+    this.chunkBodyBuilder = args.chunkBodyBuilder;
   }
 
   buildChunkCache (leftChunk, bottomChunk, chunkCacheWidth, chunkCacheHeight) {
@@ -263,12 +268,28 @@ class Chunker {
     this.shiftJ(deltJ);
   }
 
-  update () {
-    let [chunkLeft, chunkBottom] = this.camera.getVisibleChunkBounds();
+  buildBodies (chunkLeft, chunkBottom, chunkRight, chunkTop) {
     chunkLeft = Math.round(chunkLeft);
     chunkBottom = Math.round(chunkBottom);
+    chunkRight = Math.round(chunkRight);
+    chunkTop = Math.round(chunkTop);
+
+    for (let i = chunkLeft; i <= chunkRight; i++) {
+      for (let j = chunkBottom; j <= chunkTop; j++) {
+        this.chunkBodyBuilder.buildBody(this.camera, this.getChunk(i, j));
+      }
+    }
+  }
+
+  update () {
+    let [chunkLeft, chunkBottom, chunkRight, chunkTop] = this.camera.getVisibleChunkBounds();
+    chunkLeft = Math.round(chunkLeft);
+    chunkBottom = Math.round(chunkBottom);
+    chunkRight = Math.round(chunkRight);
+    chunkTop = Math.round(chunkTop);
 
     this.fillCache(chunkLeft, chunkBottom);
+    this.buildBodies(chunkLeft, chunkBottom, chunkRight, chunkTop);
   }
 
   render () {

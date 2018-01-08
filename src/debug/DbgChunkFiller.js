@@ -10,9 +10,16 @@ class DbgChunkFiller extends ChunkFiller {
       for (let j = 0; j < chunk.height; j++) {
         let block = chunk.getBlock(i, j);
         let totBlocks = chunk.width + chunk.height;
-        block.colorR = rMag * (i+j)/(totBlocks);
-        block.colorG = gMag * (i+j)/(totBlocks);
-        block.colorB = bMag * (i+j)/(totBlocks);
+        if (j === 5) {
+          block.shapeId = 'square';
+          block.colorR = 1;
+          block.colorG = 1;
+          block.colorB = 1;
+        } else {
+          block.colorR = rMag * (i+j)/(totBlocks);
+          block.colorG = gMag * (i+j)/(totBlocks);
+          block.colorB = bMag * (i+j)/(totBlocks);
+        }
       }
     }
   }

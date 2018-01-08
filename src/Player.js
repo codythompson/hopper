@@ -1,8 +1,11 @@
 const _ = require('lodash');
+const p2 = require('p2');
 const Shaders = require('./shaders/Shaders');
 const Camera = require('./Camera');
 const ChunkRenderer = require('./ChunkRenderer');
 const ColorBlockRenderer = require('./ColorBlockRenderer');
+const ChunkBodyBuilder = require('./ChunkBodyBuilder');
+const SquareShapeBuilder = require('./SquareShapeBuilder');
 const Chunker = require('./Chunker');
 const EntityManager = require('./EntityManager');
 
@@ -12,6 +15,9 @@ class Player {
       parent: null,
       autoUpdate: true,
       autoRender: true,
+      physicsArgs: {
+        gravity: [0, -1]
+      },
     });
 
     var canvas = document.createElement('canvas');
@@ -42,6 +48,8 @@ class Player {
       blocksHigh: 64
     });
 
+    this.p2World = new p2.World(args.physicsArgs);
+
     this.chunkRenderer = new ChunkRenderer({
       rendererMap: {
         ColorBlock: new ColorBlockRenderer({
@@ -51,17 +59,26 @@ class Player {
       }
     });
 
+    this.chunkBodyBuilder = new ChunkBodyBuilder({
+      world: this.p2World,
+      builderMap: {
+        square: new SquareShapeBuilder()
+      }
+    });
+
     this.chunker = new Chunker({
       camera: this.camera,
       chunkRenderer: this.chunkRenderer,
       chunkWidth: this.camera.blocksWide,
       chunkHeight: this.camera.blocksHigh,
-      chunkFiller: args.chunkFiller
+      chunkFiller: args.chunkFiller,
+      chunkBodyBuilder: this.chunkBodyBuilder
     });
 
     this.entityManager = new EntityManager({
       camera: this.camera,
-      chunkRenderer: this.chunkRenderer
+      chunkRenderer: this.chunkRenderer,
+      world: this.p2World
     });
 
     this.update = this.update.bind(this);
